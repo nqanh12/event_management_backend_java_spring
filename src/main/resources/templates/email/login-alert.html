@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cảnh báo đăng nhập mới</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f4; color: #333; }
+        .email-container { max-width: 500px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 16px rgba(102,126,234,0.08); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); color: #fff; padding: 32px 24px; text-align: center; }
+        .header h1 { font-size: 26px; margin-bottom: 8px; }
+        .content { padding: 32px 24px; }
+        .alert-box { background: #f5576c; color: #fff; font-size: 18px; font-weight: bold; padding: 16px; border-radius: 8px; margin: 18px 0; text-align: center; }
+        .details { margin: 18px 0; font-size: 15px; }
+        .details span { display: block; margin-bottom: 6px; }
+        .footer { background: #f8f9fa; color: #888; font-size: 13px; text-align: center; padding: 18px; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">⚠️ EventHub</div>
+            <h1>Cảnh báo đăng nhập mới</h1>
+            <p>Phát hiện đăng nhập từ thiết bị hoặc vị trí lạ</p>
+        </div>
+        <div class="content">
+            <div class="alert-box">Tài khoản của bạn vừa đăng nhập từ thiết bị hoặc vị trí mới!</div>
+            <div class="details">
+                <span><b>IP:</b> {{ip}}</span>
+                <span><b>Thiết bị:</b> {{user_agent}}</span>
+                <span><b>Thời gian:</b> {{time}}</span>
+            </div>
+            <div style="color:#f5576c; font-size:15px; margin-top:12px;">Nếu không phải bạn, hãy đổi mật khẩu ngay lập tức!</div>
+        </div>
+        <div class="footer">
+            <p>EventHub - Hệ thống quản lý sự kiện</p>
+            <p>© 2024 EventHub. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</body>
+</html> 
