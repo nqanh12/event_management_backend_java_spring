@@ -88,7 +88,6 @@ mvn spring-boot:run
 - JWT signerKey, thời hạn token, cookie
 - Cấu hình Swagger, CORS, logging
 
-> **Lưu ý:** Không commit thông tin mật khẩu thật lên public repo!
 
 ---
 
@@ -127,28 +126,4 @@ mvn spring-boot:run
 ## 🛡️ Bảo mật
 - JWT, refresh token, cookie bảo mật
 - Xác thực 2FA qua email OTP (bắt buộc cho admin/manager)
-- Rate limiting, audit log, cảnh báo đăng nhập lạ
-- CORS cấu hình linh hoạt
-
----
-
-## 🧑‍💻 Đóng góp & Phát triển
-- Fork, tạo branch, pull request
-- Viết test, tuân thủ code convention
-- Đóng góp template email, báo cáo, dashboard mới
-
----
-
-## 📄 License
-MIT (hoặc cập nhật theo dự án của bạn)
-
----
-
-## 📞 Liên hệ & Hỗ trợ
-- Email: support@eventhub.com
-- Phone: +84 123 456 789
-- [Swagger UI](http://localhost:8080/swagger-ui.html)
-
----
-
-> **Event Management Backend Java Spring** - Hệ thống quản lý sự kiện, điểm, sinh viên, bảo mật, phân quyền toàn diện cho trường/khoa/đơn vị tổ chức. 
+- Rate limiting,Anh**
