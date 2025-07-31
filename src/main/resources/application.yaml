@@ -3,7 +3,7 @@ spring:
         name: event_management_backend_java_spring
     data:
         mongodb:
-            uri: mongodb+srv://chaybon894:LSXufVDfDE9zKxXl@eventcheckinsystem.wwjwkb1.mongodb.net/
+            uri: ??
             database: EventManagement
     jackson:
       serialization:
@@ -24,8 +24,8 @@ spring:
     mail:
         host: smtp.gmail.com
         port: 587
-        username: nqanh120503@gmail.com        # Thay bằng email của bạn
-        password: mciwpbwlwvlfjhcl             # Dán App Password vừa tạo (không có dấu cách)
+        username: ??        # Thay bằng email của bạn
+        password: ??             # Dán App Password vừa tạo (không có dấu cách)
         properties:
           mail:
             smtp:
@@ -34,7 +34,7 @@ spring:
                 enable: true
 
 jwt:
-  signerKey: "tIpVTNnjWmJ+nIwbqvcFMdikQPxERxhtiGBnbhGtJSj2LG0126wKHw/Dro7bie6D"
+  signerKey: ??
   valid-duration: 172800
   refreshable-duration: 604800
   cookie:
