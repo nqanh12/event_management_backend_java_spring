@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký thành công - {{event_name}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .success-card {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+        
+        .success-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .success-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .registration-details {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .registration-details h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 20px;
+            text-align: center;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .detail-value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .qr-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .qr-code {
+            background: #f8f9fa;
+            border: 2px dashed #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            display: inline-block;
+            margin: 15px 0;
+        }
+        
+        .qr-code img {
+            width: 150px;
+            height: 150px;
+        }
+        
+        .qr-text {
+            color: #28a745;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-box li {
+            padding: 5px 0;
+            color: #856404;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-box li::before {
+            content: "⚠️";
+            margin-right: 10px;
+        }
+        
+        .action-buttons {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            margin: 0 10px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .footer p {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .social-links {
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .ticket-number {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+            display: inline-block;
+        }
+        
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .detail-value {
+                margin-top: 5px;
+            }
+            
+            .btn {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">🎉 EventHub</div>
+            <h1>Đăng ký thành công!</h1>
+            <p>Chúc mừng! Bạn đã đăng ký tham gia sự kiện thành công</p>
+        </div>
+        
+        <div class="content">
+            <div class="success-card">
+                <div class="success-icon">✅</div>
+                <div class="success-title">Đăng ký hoàn tất!</div>
+                <p>Bạn đã được xác nhận tham gia sự kiện</p>
+                <div class="ticket-number">Mã vé: {{ticket_number}}</div>
+            </div>
+            
+            <div class="registration-details">
+                <h3>📋 Chi tiết đăng ký</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Sự kiện:</span>
+                    <span class="detail-value">{{event_name}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Thời gian:</span>
+                    <span class="detail-value">{{event_time}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Địa điểm:</span>
+                    <span class="detail-value">{{event_location}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Người đăng ký:</span>
+                    <span class="detail-value">{{user_name}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">{{user_email}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Ngày đăng ký:</span>
+                    <span class="detail-value">{{registration_date}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Trạng thái:</span>
+                    <span class="detail-value" style="color: #28a745; font-weight: bold;">✅ Đã xác nhận</span>
+                </div>
+            </div>
+            
+            <div class="qr-section">
+                <h3>📱 QR Code Check-in</h3>
+                <div class="qr-code">
+                    <img src="{{qr_code_url}}" alt="QR Code" />
+                    <div class="qr-text">Quét mã này để check-in</div>
+                </div>
+                <p style="color: #666; font-size: 14px;">
+                    Hoặc sử dụng mã vé: <strong>{{ticket_number}}</strong>
+                </p>
+            </div>
+            
+            <div class="info-box">
+                <h4>📢 Lưu ý quan trọng</h4>
+                <ul>
+                    <li>Vui lòng đến sớm 15 phút trước khi sự kiện bắt đầu</li>
+                    <li>Mang theo thẻ sinh viên/CMND để xác minh danh tính</li>
+                    <li>Lưu giữ email này để làm bằng chứng đăng ký</li>
+                    <li>Nếu không thể tham gia, vui lòng hủy đăng ký trước 24h</li>
+                </ul>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{{event_details_link}}" class="btn btn-primary">📖 Xem chi tiết sự kiện</a>
+                <a href="{{cancel_link}}" class="btn btn-secondary">❌ Hủy đăng ký</a>
+            </div>
+            
+            <p style="text-align: center; color: #666; font-size: 14px; margin-top: 20px;">
+                Cảm ơn bạn đã đăng ký tham gia! Chúng tôi rất mong được gặp bạn tại sự kiện.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>EventHub - Hệ thống quản lý sự kiện</strong></p>
+            <p>© 2024 EventHub. Tất cả quyền được bảo lưu.</p>
+            <p>Email: support@eventhub.com | Phone: +84 123 456 789</p>
+            <div class="social-links">
+                <a href="#">📧</a>
+                <a href="#">📱</a>
+                <a href="#">🌐</a>
+                <a href="#">📘</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

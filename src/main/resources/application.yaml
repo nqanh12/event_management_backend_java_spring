@@ -1,0 +1,68 @@
+spring:
+    application:
+        name: event_management_backend_java_spring
+    data:
+        mongodb:
+            uri: mongodb+srv://chaybon894:LSXufVDfDE9zKxXl@eventcheckinsystem.wwjwkb1.mongodb.net/
+            database: EventManagement
+    jackson:
+      serialization:
+        write-dates-as-timestamps: false
+
+    logging:
+        level:
+        root: DEBUG
+        org.mongodb.driver: DEBUG
+        org:
+            springframework:
+            web:
+                socket: DEBUG
+            messaging:
+                simp:
+                stomp: DEBUG
+        org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: ERROR
+    mail:
+        host: smtp.gmail.com
+        port: 587
+        username: nqanh120503@gmail.com        # Thay bằng email của bạn
+        password: mciwpbwlwvlfjhcl             # Dán App Password vừa tạo (không có dấu cách)
+        properties:
+          mail:
+            smtp:
+              auth: true
+              starttls:
+                enable: true
+
+jwt:
+  signerKey: "tIpVTNnjWmJ+nIwbqvcFMdikQPxERxhtiGBnbhGtJSj2LG0126wKHw/Dro7bie6D"
+  valid-duration: 172800
+  refreshable-duration: 604800
+  cookie:
+    domain: ""  # Để trống cho localhost, set domain cho production
+    secure: true   # true cho HTTPS, false cho development
+    same-site: "Strict"  # Strict, Lax, hoặc None
+server:
+    port: 8080
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    display-request-duration: true
+    doc-expansion: none
+    filter: true
+    tryItOutEnabled: true
+    show-extensions: true
+    show-common-extensions: true
+    persist-authorization: true
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+
+info:
+  title: Event Management Backend API
+  description: API documentation for Event Management System (Spring Boot)
+  version: 1.0.0
+

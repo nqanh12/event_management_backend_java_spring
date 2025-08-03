@@ -1,0 +1,700 @@
+[AUTH CONTROLLER]
+
+[POST] /api/auth/register
+- Handler: register
+- Request body (User):
+{
+  "email": "user@example.com",
+  "password": "string",
+  "fullName": "string",
+  "studentId": "string (optional)",
+  "role": "STUDENT|GUEST|ORGANIZER|...",
+  "department": "departmentId (optional)",
+  "className": "string (optional)",
+  "cohort": 2021
+}
+- Platform roles: Tất cả vai trò
+- Description: Đăng ký tài khoản mới
+
+[POST] /api/auth/login
+- Handler: login
+- Request body (LoginRequest):
+{
+  "email": "user@example.com",
+  "password": "string"
+}
+- Platform roles: Tất cả vai trò
+- Description: Đăng nhập
+
+[POST] /api/auth/verify-2fa
+- Handler: verify2fa
+- Request param: email, otp
+- Platform roles: Tất cả vai trò
+- Description: Xác thực OTP 2FA
+
+[POST] /api/auth/enable-2fa
+- Handler: enable2fa
+- Request param: email
+- Platform roles: Tất cả vai trò
+- Description: Bật xác thực 2FA
+
+[POST] /api/auth/disable-2fa
+- Handler: disable2fa
+- Request param: email
+- Platform roles: Tất cả vai trò
+- Description: Tắt xác thực 2FA
+
+[POST] /api/auth/request-otp
+- Handler: requestOtp
+- Request param: email
+- Platform roles: Tất cả vai trò
+- Description: Gửi lại OTP 2FA
+
+[POST] /api/auth/refresh-token
+- Handler: refreshToken
+- No request body
+- Platform roles: Tất cả vai trò
+- Description: Làm mới access token bằng refresh token
+
+[POST] /api/auth/forgot-password
+- Handler: forgotPassword
+- Request body (ForgotPasswordRequest):
+{
+  "email": "user@example.com"
+}
+- Platform roles: Tất cả vai trò
+- Description: Gửi OTP đặt lại mật khẩu
+
+[POST] /api/auth/reset-password
+- Handler: resetPassword
+- Request body (ResetPasswordRequest):
+{
+  "email": "user@example.com",
+  "otp": "string",
+  "newPassword": "string"
+}
+- Platform roles: Tất cả vai trò
+- Description: Đặt lại mật khẩu
+
+[POST] /api/auth/logout
+- Handler: logout
+- No request body
+- Platform roles: Tất cả vai trò
+- Description: Đăng xuất
+
+[GET] /api/auth/status
+- Handler: checkAuthStatus
+- No request body
+- Platform roles: Tất cả vai trò
+- Description: Kiểm tra trạng thái xác thực
+
+[POST] /api/auth/logout-all
+- Handler: logoutAllUsers
+- Request param: username
+- Platform roles: GLOBAL_ADMIN
+- Description: Đăng xuất toàn bộ phiên của user
+
+
+[ACADEMIC CONTROLLER]
+
+[GET] /api/academic/current-semester/{userId}
+- Handler: getCurrentSemester
+- PathVariable: String userId
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER hoặc chính user
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER, USER
+- No request body
+- Description: Lấy thông tin học kỳ hiện tại của user
+
+[PUT] /api/academic/update-academic-info/{userId}
+- Handler: updateAcademicInfo
+- PathVariable: String userId
+- RequestParam: String academicYear, String enrollmentDateStr (optional)
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- No request body
+- Description: Cập nhật thông tin niên khóa học cho user
+
+[GET] /api/academic/semesters
+- Handler: getSemesters
+- Platform roles: Tất cả vai trò
+- No request body
+- Description: Lấy danh sách các kỳ học
+
+[POST] /api/academic/calculate-semester-by-date/{userId}
+- Handler: calculateSemesterByDate
+- PathVariable: String userId
+- RequestParam: String targetDateStr
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER hoặc chính user
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER, USER
+- No request body
+- Description: Tính toán học kỳ dựa trên ngày cụ thể
+
+[GET] /api/academic/semester-info/{userId}
+- Handler: getSemesterInfo
+- PathVariable: String userId
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER hoặc chính user
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER, USER
+- No request body
+- Description: Lấy thông tin chi tiết về học kỳ hiện tại
+
+[GET] /api/academic/all-users-semester-info
+- Handler: getAllUsersSemesterInfo
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- No request body
+- Description: Lấy thông tin học kỳ của tất cả users
+
+
+[EVENT CONTROLLER]
+
+[POST] /api/events
+- Handler: createEvent
+- Request body (EventRequest):
+{
+  "name": "string",
+  "type": "TRAINING|SOCIAL",
+  "startTime": "2024-08-01T08:00:00Z",
+  "endTime": "2024-08-01T10:00:00Z",
+  "location": "string",
+  "departmentId": "string",
+  "courseId": "string (optional)",
+  "maxParticipants": 100,
+  "note": "string (optional)",
+  "allowCancelRegistration": true,
+  "allowedCohorts": [2021,2022],
+  "allowAllCohorts": true,
+  "scope": "string (optional)"
+}
+- Request body (String organizerId): "organizerId"
+- Roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER, ORGANIZER
+- Platform roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER, ORGANIZER
+- Description: Tạo mới một sự kiện với các thông tin chi tiết.
+
+[GET] /api/events
+- Handler: getAllEvents
+- Platform roles: Tất cả vai trò
+- No request body
+- Description: Lấy tất cả sự kiện
+
+[PUT] /api/events/{id}/approve
+- Handler: approveEvent
+- PathVariable: String id
+- Roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER, ORGANIZER
+- Platform roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER, ORGANIZER
+- No request body
+- Description: Duyệt sự kiện
+
+[PUT] /api/events/{id}
+- Handler: updateEvent
+- PathVariable: String id
+- Request body (EventRequest):
+{
+  "name": "string",
+  "type": "TRAINING|SOCIAL",
+  "startTime": "2024-08-01T08:00:00Z",
+  "endTime": "2024-08-01T10:00:00Z",
+  "location": "string",
+  "departmentId": "string",
+  "courseId": "string (optional)",
+  "maxParticipants": 100,
+  "note": "string (optional)",
+  "allowCancelRegistration": true,
+  "allowedCohorts": [2021,2022],
+  "allowAllCohorts": true,
+  "scope": "string (optional)"
+}
+- Request body (String organizerId): "organizerId"
+- Roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER, ORGANIZER
+- Platform roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER, ORGANIZER
+- Description: Cập nhật thông tin sự kiện
+
+
+[DEPARTMENT CONTROLLER]
+
+[POST] /api/departments
+- Handler: createDepartment
+- Request body (DepartmentRequest):
+{
+  "name": "string",
+  "type": "FACULTY|SCHOOL",
+  "trainingPointsPenalty": 0,
+  "socialPointsPenalty": 0
+}
+- Roles: GLOBAL_ADMIN
+- Platform roles: GLOBAL_ADMIN
+- Description: Tạo khoa/phòng ban
+
+[PUT] /api/departments/{id}
+- Handler: updateDepartment
+- PathVariable: String id
+- Request body (DepartmentRequest):
+{
+  "name": "string",
+  "type": "FACULTY|SCHOOL",
+  "trainingPointsPenalty": 0,
+  "socialPointsPenalty": 0
+}
+- Roles: GLOBAL_ADMIN
+- Platform roles: GLOBAL_ADMIN
+- Description: Cập nhật khoa/phòng ban
+
+[DELETE] /api/departments/{id}
+- Handler: deleteDepartment
+- PathVariable: String id
+- Roles: GLOBAL_ADMIN
+- Platform roles: GLOBAL_ADMIN
+- No request body
+- Description: Xóa khoa/phòng ban
+
+[GET] /api/departments
+- Handler: getAllDepartments
+- Platform roles: Tất cả vai trò
+- No request body
+- Description: Lấy tất cả khoa/phòng ban
+
+[GET] /api/departments/{id}
+- Handler: getDepartmentById
+- PathVariable: String id
+- Platform roles: Tất cả vai trò
+- No request body
+- Description: Lấy thông tin khoa/phòng ban theo ID
+
+[GET] /api/departments/search?name=...
+- Handler: getDepartmentByName
+- RequestParam: String name
+- Platform roles: Tất cả vai trò
+- No request body
+- Description: Tìm kiếm khoa/phòng ban theo tên
+
+[PUT] /api/departments/{id}/penalty-points
+- Handler: updateDepartmentPenaltyPoints
+- PathVariable: String id
+- Request body (UpdateDepartmentPenaltyRequest):
+{
+  "trainingPointsPenalty": 0,
+  "socialPointsPenalty": 0
+}
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Description: Cập nhật điểm phạt khoa/phòng ban
+
+
+[USER CONTROLLER]
+
+[PUT] /api/users/points
+- Handler: updatePoints
+- Request body (UpdatePointsRequest):
+{
+  "userId": "string",
+  "semester": "FIRST|SECOND|...",
+  "trainingPoints": 10.0,
+  "socialPoints": 5.0,
+  "reason": "string (optional)",
+  "description": "string (optional)"
+}
+- Platform roles: USER (phải xác thực)
+- Description: Cập nhật điểm người dùng
+
+[PUT] /api/users/change-password
+- Handler: changePassword
+- Request body (ChangePasswordRequest):
+{
+  "oldPassword": "string",
+  "newPassword": "string",
+  "confirmPassword": "string"
+}
+- Platform roles: USER (phải xác thực)
+- Description: Đổi mật khẩu
+
+
+[SCHOOL CONTROLLER]
+
+[POST] /api/schools
+- Handler: createSchool
+- Request body (SchoolRequest):
+{
+  "code": "string",
+  "name": "string",
+  "description": "string (optional)",
+  "address": "string",
+  "phone": "string",
+  "email": "string",
+  "website": "string (optional)",
+  "contactPerson": "string (optional)",
+  "contactPhone": "string (optional)",
+  "contactEmail": "string (optional)",
+  "defaultTrainingPoints": 10,
+  "defaultSocialPoints": 5,
+  "defaultPenaltyPoints": 5,
+  "billingAddress": "string (optional)",
+  "taxId": "string (optional)",
+  "paymentMethod": "string (optional)",
+  "customSettings": {"key": "value"}
+}
+- Request body (String createBy): "createBy"
+- Roles: GLOBAL_ADMIN
+- Platform roles: GLOBAL_ADMIN
+- Description: Tạo trường học
+
+[GET] /api/schools/{id}
+- Handler: getSchoolById
+- PathVariable: String id
+- Platform roles: Tất cả vai trò
+- No request body
+- Description: Lấy thông tin trường học theo ID
+
+[GET] /api/schools
+- Handler: getAllSchools
+- Platform roles: Tất cả vai trò
+- No request body
+- Description: Lấy danh sách tất cả trường học
+
+[GET] /api/schools/active
+- Handler: getActiveSchools
+- Platform roles: Tất cả vai trò
+- No request body
+- Description: Lấy danh sách trường học đang hoạt động
+
+
+[POINTS CONTROLLER]
+
+[POST] /api/points/events/{eventId}/manual-update
+- Handler: manualUpdatePointsForEvent
+- PathVariable: String eventId
+- Request body (BulkUpdatePointsRequest):
+{
+  "userIds": ["userId1", "userId2"],
+  "points": 10,
+  "reason": "string",
+  "trainingPointsToAdd": 5,
+  "socialPointsToAdd": 5
+}
+- Roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER
+- Platform roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER
+
+[GET] /api/points/events/{eventId}/report
+- Handler: getEventPointsReport
+- PathVariable: String eventId
+- Roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER
+- Platform roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER
+
+[POST] /api/points/events/{eventId}/manual-process
+- Handler: manualProcessPoints
+- PathVariable: String eventId
+- Request body (ManualPointsProcessingRequest):
+{
+  "eventId": "string",
+  "userIds": ["userId1", "userId2"],
+  "action": "AWARD|PENALIZE|IGNORE",
+  "customPoints": 10,
+  "reason": "string",
+  "description": "string (optional)"
+}
+- Roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER
+- Platform roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER
+
+[GET] /api/points/events/{eventId}/pending
+- Handler: getPendingManualProcessing
+- PathVariable: String eventId
+- Roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER
+- Platform roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER
+
+[GET] /api/points/dashboard
+- Handler: getPointsProcessingDashboard
+- Roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER
+- Platform roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER
+
+[PUT] /api/points/training
+- Handler: updateTrainingPoints
+- Request body (UpdatePointsRequest):
+{
+  "userId": "string",
+  "semester": "FIRST|SECOND|...",
+  "trainingPoints": 10.0,
+  "socialPoints": 5.0,
+  "reason": "string (optional)",
+  "description": "string (optional)"
+}
+- RequestParam: String adminId
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+
+[PUT] /api/points/social
+- Handler: updateSocialPoints
+- Request body (UpdatePointsRequest):
+{
+  "userId": "string",
+  "semester": "FIRST|SECOND|...",
+  "trainingPoints": 10.0,
+  "socialPoints": 5.0,
+  "reason": "string (optional)",
+  "description": "string (optional)"
+}
+- RequestParam: String adminId
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+
+[GET] /api/points/user/{userId}
+- Handler: getUserPoints
+- PathVariable: String userId
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER hoặc chính user
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER, USER
+
+[GET] /api/points/user/{userId}/history
+- Handler: getUserPointsHistory
+- PathVariable: String userId
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER hoặc chính user
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER, USER
+
+[GET] /api/points/semesters
+- Handler: getSemesters
+- Platform roles: Tất cả vai trò
+- No request body
+
+[GET] /api/points/my-points?userId=...
+- Handler: getMyPoints
+- RequestParam: String userId
+- Roles: isAuthenticated
+- Platform roles: USER (phải xác thực)
+
+[GET] /api/points/my-history?userId=...
+- Handler: getMyPointsHistory
+- RequestParam: String userId
+- Roles: isAuthenticated
+- Platform roles: USER (phải xác thực)
+
+[POST] /api/points/update
+- Handler: updatePoints
+- Request body (UpdatePointsRequest):
+{
+  "userId": "string",
+  "semester": "FIRST|SECOND|...",
+  "trainingPoints": 10.0,
+  "socialPoints": 5.0,
+  "reason": "string (optional)",
+  "description": "string (optional)"
+}
+- Platform roles: USER (phải xác thực)
+
+[POST] /api/points/manual
+- Handler: manualPointsProcessing
+- Request body (ManualPointsProcessingRequest):
+{
+  "eventId": "string",
+  "userIds": ["userId1", "userId2"],
+  "action": "AWARD|PENALIZE|IGNORE",
+  "customPoints": 10,
+  "reason": "string",
+  "description": "string (optional)"
+}
+- Platform roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER
+
+[POST] /api/points/bulk
+- Handler: bulkUpdatePoints
+- Request body (BulkUpdatePointsRequest):
+{
+  "userIds": ["userId1", "userId2"],
+  "points": 10,
+  "reason": "string",
+  "trainingPointsToAdd": 5,
+  "socialPointsToAdd": 5
+}
+- Platform roles: GLOBAL_ADMIN, FACULTY_ADMIN, SCHOOL_MANAGER
+
+
+[REPORT CONTROLLER]
+
+[GET] /api/reports/events
+- Handler: eventCountByStatus
+- Roles: GLOBAL_ADMIN
+- Platform roles: GLOBAL_ADMIN
+
+[GET] /api/reports/students/top?limit=10
+- Handler: topStudentsByPoints
+- RequestParam: int limit (default 10)
+- Roles: GLOBAL_ADMIN
+- Platform roles: GLOBAL_ADMIN
+
+[GET] /api/reports/departments
+- Handler: eventCountByDepartment
+- Roles: GLOBAL_ADMIN
+- Platform roles: GLOBAL_ADMIN
+
+
+[NOTIFICATION CONTROLLER]
+
+[POST] /api/notifications
+- Handler: sendNotification
+- Request body (NotificationRequest):
+{
+  "title": "string",
+  "content": "string",
+  "recipientId": "string",
+  "userId": "string (optional)",
+  "type": "string (optional)"
+}
+- Platform roles: Tất cả vai trò (nếu không giới hạn)
+- Description: Gửi thông báo đến người dùng
+
+[GET] /api/notifications/user/{userId}
+- Handler: getNotificationsByUser
+- PathVariable: String userId
+- Platform roles: Tất cả vai trò (nếu không giới hạn)
+- Description: Lấy danh sách thông báo của một người dùng
+
+
+[ANALYTICS CONTROLLER]
+
+[POST] /api/analytics/summary
+- Handler: getSummary
+- Request body (AnalyticsRequest):
+{
+  "type": "string"
+}
+- Platform roles: Tất cả vai trò (nếu không giới hạn)
+- Description: Lấy tổng quan phân tích theo loại
+
+[POST] /api/analytics/participation-trends?startDate=...&endDate=...
+- Handler: getParticipationTrends
+- RequestParam: Date startDate, Date endDate
+- Platform roles: Tất cả vai trò (nếu không giới hạn)
+- Description: Phân tích xu hướng tham gia sự kiện
+
+[GET] /api/analytics/event-roi
+- Handler: getEventROIAnalysis
+- Platform roles: Tất cả vai trò (nếu không giới hạn)
+- Description: Phân tích ROI cho các sự kiện
+
+[GET] /api/analytics/user-behavior
+- Handler: getUserBehaviorAnalysis
+- Platform roles: Tất cả vai trò (nếu không giới hạn)
+- Description: Phân tích hành vi người dùng
+
+
+[DASHBOARD CONTROLLER]
+
+[GET] /api/dashboard
+- Handler: getDashboard
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+
+[GET] /api/dashboard/overview
+- Handler: getOverviewStats
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+
+[GET] /api/dashboard/time-series
+- Handler: getTimeSeriesStats
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+
+[GET] /api/dashboard/departments
+- Handler: getDepartmentStats
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+
+[GET] /api/dashboard/top-students
+- Handler: getTopStudents
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+
+[GET] /api/dashboard/top-organizers
+- Handler: getTopOrganizers
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+
+[GET] /api/dashboard/events
+- Handler: getEventStats
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+
+[GET] /api/dashboard/points
+- Handler: getPointsStats
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+
+[GET] /api/dashboard/security
+- Handler: getSecurityStats
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+
+[GET] /api/dashboard/recent-activities
+- Handler: getRecentActivities
+- Roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+- Platform roles: GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN
+
+
+[REGISTRATION CONTROLLER]
+
+[POST] /api/registrations
+- Handler: registerEvent
+- Request body (RegistrationRequest):
+{
+  "eventId": "string",
+  "userId": "string",
+  "registrationType": "string"
+}
+- Roles: STUDENT, GUEST
+- Platform roles: STUDENT, GUEST
+- Description: Đăng ký tham gia sự kiện
+
+[POST] /api/registrations/{eventId}/check-in
+- Handler: checkIn
+- PathVariable: String eventId
+- Roles: FACULTY_SCANNER, SCHOOL_SCANNER
+- Platform roles: FACULTY_SCANNER, SCHOOL_SCANNER
+- Description: Check-in cho sự kiện
+
+[POST] /api/registrations/{eventId}/check-out
+- Handler: checkOut
+- PathVariable: String eventId
+- Roles: FACULTY_SCANNER, SCHOOL_SCANNER
+- Platform roles: FACULTY_SCANNER, SCHOOL_SCANNER
+- Description: Check-out cho sự kiện
+
+[PUT] /api/registrations/{eventId}/cancel
+- Handler: cancelRegistration
+- PathVariable: String eventId
+- Roles: STUDENT, GUEST
+- Platform roles: STUDENT, GUEST
+- Description: Hủy đăng ký sự kiện
+
+[GET] /api/registrations/my-registrations
+- Handler: getMyRegistrations
+- Roles: STUDENT, GUEST
+- Platform roles: STUDENT, GUEST
+- Description: Lấy danh sách đăng ký của tôi
+
+[GET] /api/registrations/my-registrations/{status}
+- Handler: getMyRegistrationsByStatus
+- PathVariable: String status
+- Roles: STUDENT, GUEST
+- Platform roles: STUDENT, GUEST
+- Description: Lấy danh sách đăng ký của tôi theo trạng thái
+
+
+[FEEDBACK CONTROLLER]
+
+[POST] /api/feedbacks
+- Handler: sendFeedback
+- Request body (FeedbackRequest):
+{
+  "eventId": "string",
+  "userId": "string",
+  "content": "string",
+  "rating": 5
+}
+- Platform roles: USER (phải xác thực)
+- Description: Gửi phản hồi sự kiện
+
+[GET] /api/feedbacks/event/{eventId}
+- Handler: getFeedbacksByEvent
+- PathVariable: String eventId
+- Platform roles: Tất cả vai trò
+- Description: Lấy danh sách phản hồi cho sự kiện
+
+[GET] /api/feedbacks/user/{userId}
+- Handler: getFeedbacksByUser
+- PathVariable: String userId
+- Platform roles: Tất cả vai trò
+- Description: Lấy danh sách phản hồi của một người dùng 

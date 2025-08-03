@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mã xác thực đăng nhập (2FA)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f4; color: #333; }
+        .email-container { max-width: 500px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 16px rgba(102,126,234,0.08); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 32px 24px; text-align: center; }
+        .header h1 { font-size: 26px; margin-bottom: 8px; }
+        .content { padding: 32px 24px; text-align: center; }
+        .otp-box { background: #f093fb; color: #fff; font-size: 32px; font-weight: bold; padding: 18px 0; border-radius: 8px; margin: 24px 0; letter-spacing: 6px; }
+        .info { font-size: 16px; margin-bottom: 18px; }
+        .footer { background: #f8f9fa; color: #888; font-size: 13px; text-align: center; padding: 18px; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">🔐 EventHub</div>
+            <h1>Mã xác thực đăng nhập</h1>
+            <p>Bảo vệ tài khoản của bạn với xác thực 2 lớp</p>
+        </div>
+        <div class="content">
+            <div class="info">Mã OTP của bạn là:</div>
+            <div class="otp-box">{{otp}}</div>
+            <div class="info">Mã này có hiệu lực trong <b>5 phút</b>. Không chia sẻ mã này cho bất kỳ ai.</div>
+        </div>
+        <div class="footer">
+            <p>EventHub - Hệ thống quản lý sự kiện</p>
+            <p>© 2024 EventHub. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài khoản mới được tạo</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f4; color: #333; }
+        .email-container { max-width: 500px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 16px rgba(102,126,234,0.08); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 32px 24px; text-align: center; }
+        .header h1 { font-size: 26px; margin-bottom: 8px; }
+        .content { padding: 32px 24px; }
+        .info-box { background: #f093fb; color: #fff; font-size: 18px; font-weight: bold; padding: 16px; border-radius: 8px; margin: 18px 0; text-align: center; }
+        .details { margin: 18px 0; font-size: 15px; }
+        .details span { display: block; margin-bottom: 6px; }
+        .footer { background: #f8f9fa; color: #888; font-size: 13px; text-align: center; padding: 18px; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">👤 EventHub</div>
+            <h1>Chào mừng bạn đến với EventHub!</h1>
+            <p>Tài khoản của bạn đã được tạo thành công</p>
+        </div>
+        <div class="content">
+            <div class="info-box">Thông tin tài khoản</div>
+            <div class="details">
+                <span><b>Email:</b> {{email}}</span>
+                <span><b>Họ tên:</b> {{full_name}}</span>
+                <span><b>Mã sinh viên:</b> {{student_id}}</span>
+                <span><b>Lớp:</b> {{class_name}}</span>
+                <span><b>Mật khẩu:</b> {{password}}</span>
+            </div>
+            <div style="color:#667eea; font-size:15px; margin-top:12px;">Vui lòng đăng nhập và đổi mật khẩu ngay lần đầu sử dụng.</div>
+        </div>
+        <div class="footer">
+            <p>EventHub - Hệ thống quản lý sự kiện</p>
+            <p>© 2024 EventHub. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo điểm - EventHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .points-card {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+        
+        .points-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .points-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .points-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .points-change {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        
+        .points-positive {
+            color: #28a745;
+        }
+        
+        .points-negative {
+            color: #dc3545;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .activity-details {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .activity-details h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 20px;
+            text-align: center;
+        }
+        
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-info {
+            flex: 1;
+        }
+        
+        .activity-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .activity-description {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .activity-points {
+            font-weight: bold;
+            font-size: 18px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin-left: 15px;
+        }
+        
+        .points-earned {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+        
+        .points-deducted {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+        }
+        
+        .achievement-section {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .achievement-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .achievement-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .achievement-description {
+            color: #856404;
+            font-size: 16px;
+        }
+        
+        .leaderboard-section {
+            background-color: #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .leaderboard-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+        
+        .rank {
+            font-weight: bold;
+            color: #495057;
+            margin-right: 15px;
+        }
+        
+        .rank-1 { color: #ffd700; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+        
+        .user-name {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        .user-points {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .action-buttons {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            margin: 0 10px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .footer p {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .social-links {
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .activity-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .activity-points {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+            
+            .btn {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">🏆 EventHub</div>
+            <h1>Thông báo điểm!</h1>
+            <p>Điểm số của bạn đã được cập nhật</p>
+        </div>
+        
+        <div class="content">
+            <div class="points-card">
+                <div class="points-icon">🎯</div>
+                <div class="points-title">Điểm số hiện tại</div>
+                <div class="points-amount">{{total_points}} điểm</div>
+                <div class="points-change {{points_change_class}}">
+                    {{points_change_text}}
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">{{events_attended}}</div>
+                        <div class="stat-label">Sự kiện đã tham gia</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{current_rank}}</div>
+                        <div class="stat-label">Xếp hạng hiện tại</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{points_this_month}}</div>
+                        <div class="stat-label">Điểm tháng này</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{next_level_points}}</div>
+                        <div class="stat-label">Điểm cần để lên cấp</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="activity-details">
+                <h3>📊 Hoạt động gần đây</h3>
+                <div class="activity-item">
+                    <div class="activity-info">
+                        <div class="activity-name">{{activity_name}}</div>
+                        <div class="activity-description">{{activity_description}}</div>
+                    </div>
+                    <div class="activity-points {{points_class}}">
+                        {{activity_points}}
+                    </div>
+                </div>
+            </div>
+            
+            {{#if achievement_unlocked}}
+            <div class="achievement-section">
+                <div class="achievement-icon">🏅</div>
+                <div class="achievement-title">Thành tựu mới!</div>
+                <div class="achievement-description">{{achievement_name}} - {{achievement_description}}</div>
+            </div>
+            {{/if}}
+            
+            <div class="leaderboard-section">
+                <h3>🏆 Bảng xếp hạng</h3>
+                <div class="leaderboard-item">
+                    <span class="rank rank-1">🥇</span>
+                    <span class="user-name">{{top_user_1}}</span>
+                    <span class="user-points">{{top_points_1}} điểm</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank rank-2">🥈</span>
+                    <span class="user-name">{{top_user_2}}</span>
+                    <span class="user-points">{{top_points_2}} điểm</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank rank-3">🥉</span>
+                    <span class="user-name">{{top_user_3}}</span>
+                    <span class="user-points">{{top_points_3}} điểm</span>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{{leaderboard_link}}" class="btn btn-primary">🏆 Xem bảng xếp hạng</a>
+                <a href="{{profile_link}}" class="btn btn-secondary">👤 Xem hồ sơ</a>
+            </div>
+            
+            <p style="text-align: center; color: #666; font-size: 14px; margin-top: 20px;">
+                Tiếp tục tham gia các sự kiện để tích lũy thêm điểm và leo lên bảng xếp hạng!
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>EventHub - Hệ thống quản lý sự kiện</strong></p>
+            <p>© 2024 EventHub. Tất cả quyền được bảo lưu.</p>
+            <p>Email: support@eventhub.com | Phone: +84 123 456 789</p>
+            <div class="social-links">
+                <a href="#">📧</a>
+                <a href="#">📱</a>
+                <a href="#">🌐</a>
+                <a href="#">📘</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
