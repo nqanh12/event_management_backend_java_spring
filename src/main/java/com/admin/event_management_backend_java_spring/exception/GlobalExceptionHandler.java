@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
+import org.apache.catalina.connector.ClientAbortException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +28,17 @@ public class GlobalExceptionHandler {
         if (ex.getErrorCode() == ErrorCode.COURSE_NOT_FOUND) status = HttpStatus.NOT_FOUND;
         ApiResponse<Object> response = new ApiResponse<>(false, ex.getMessage(), null);
         return new ResponseEntity<>(response, status);
+    }
+
+    /**
+     * Handle client abort exceptions - these occur when client disconnects before response is sent.
+     * This is a normal scenario and should not be logged as an error.
+     */
+    @ExceptionHandler({ClientAbortException.class, AsyncRequestNotUsableException.class})
+    public void handleClientAbortException(Exception ex) {
+        // Log at debug level instead of error - this is normal client behavior
+        log.debug("Client disconnected before response was sent: {}", ex.getMessage());
+        // Don't return response as connection is already closed
     }
 
     @ExceptionHandler(Exception.class)

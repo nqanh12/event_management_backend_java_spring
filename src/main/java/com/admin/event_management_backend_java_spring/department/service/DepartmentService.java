@@ -8,6 +8,7 @@ import com.admin.event_management_backend_java_spring.department.repository.Depa
 import com.admin.event_management_backend_java_spring.payload.ApiResponse;
 import com.admin.event_management_backend_java_spring.exception.AppException;
 import com.admin.event_management_backend_java_spring.exception.ErrorCode;
+import com.admin.event_management_backend_java_spring.audit.service.AuditService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -22,6 +24,9 @@ import java.util.Optional;
 public class DepartmentService {
     @Autowired
     private DepartmentRepository departmentRepository;
+    
+    @Autowired
+    private AuditService auditService;
 
     private DepartmentResponse toDepartmentResponse(Department dep) {
         DepartmentResponse dto = new DepartmentResponse();
@@ -65,6 +70,23 @@ public class DepartmentService {
         department.setUpdatedBy(userId);
         
         departmentRepository.save(department);
+        
+        // Ghi log Audit
+        auditService.logActivity(
+            "DEPARTMENT_CREATE",
+            "DEPARTMENT",
+            department.getId(),
+            "Tạo khoa/phòng ban mới: " + department.getName(),
+            null,
+            Map.of(
+                "name", department.getName(),
+                "trainingPointsPenalty", department.getTrainingPointsPenalty(),
+                "socialPointsPenalty", department.getSocialPointsPenalty()
+            ),
+            "SUCCESS",
+            null
+        );
+        
         return new ApiResponse<>(true, "Department created successfully", toDepartmentResponse(department));
     }
 
@@ -83,6 +105,14 @@ public class DepartmentService {
         String userId = ((org.springframework.security.core.userdetails.User) user).getUsername();
         
         Department department = getDepartmentOrThrow(id);
+        
+        // Lưu giá trị cũ để log
+        Map<String, Object> oldValues = Map.of(
+            "name", department.getName(),
+            "trainingPointsPenalty", department.getTrainingPointsPenalty(),
+            "socialPointsPenalty", department.getSocialPointsPenalty()
+        );
+        
         department.setName(req.getName());
         
         // Update penalty points if provided
@@ -98,13 +128,51 @@ public class DepartmentService {
         department.setUpdatedBy(userId);
         
         departmentRepository.save(department);
+        
+        // Ghi log Audit
+        auditService.logActivity(
+            "DEPARTMENT_UPDATE",
+            "DEPARTMENT",
+            department.getId(),
+            "Cập nhật khoa/phòng ban: " + department.getName(),
+            oldValues,
+            Map.of(
+                "name", department.getName(),
+                "trainingPointsPenalty", department.getTrainingPointsPenalty(),
+                "socialPointsPenalty", department.getSocialPointsPenalty()
+            ),
+            "SUCCESS",
+            null
+        );
+        
         return new ApiResponse<>(true, "Department updated successfully", toDepartmentResponse(department));
     }
 
     public ApiResponse<?> deleteDepartment(String id) {
         log.info("[DEPARTMENT] Xóa khoa/phòng ban id: {}", id);
         Department department = getDepartmentOrThrow(id);
+        
+        // Lưu thông tin để log trước khi xóa
+        Map<String, Object> oldValues = Map.of(
+            "name", department.getName(),
+            "trainingPointsPenalty", department.getTrainingPointsPenalty(),
+            "socialPointsPenalty", department.getSocialPointsPenalty()
+        );
+        
         departmentRepository.delete(department);
+        
+        // Ghi log Audit
+        auditService.logActivity(
+            "DEPARTMENT_DELETE",
+            "DEPARTMENT",
+            id,
+            "Xóa khoa/phòng ban: " + department.getName(),
+            oldValues,
+            null,
+            "SUCCESS",
+            null
+        );
+        
         return new ApiResponse<>(true, "Department deleted successfully", null);
     }
 
@@ -127,6 +195,12 @@ public class DepartmentService {
         
         Department department = getDepartmentOrThrow(id);
         
+        // Lưu giá trị cũ để log
+        Map<String, Object> oldValues = Map.of(
+            "trainingPointsPenalty", department.getTrainingPointsPenalty(),
+            "socialPointsPenalty", department.getSocialPointsPenalty()
+        );
+        
         // Update penalty points
         if (req.getTrainingPointsPenalty() != null) {
             department.setTrainingPointsPenalty(req.getTrainingPointsPenalty());
@@ -140,6 +214,23 @@ public class DepartmentService {
         department.setUpdatedBy(userId);
         
         departmentRepository.save(department);
+        
+        // Ghi log Audit
+        auditService.logActivity(
+            "DEPARTMENT_PENALTY_UPDATE",
+            "DEPARTMENT",
+            department.getId(),
+            "Cập nhật điểm phạt cho khoa/phòng ban: " + department.getName(),
+            oldValues,
+            Map.of(
+                "trainingPointsPenalty", department.getTrainingPointsPenalty(),
+                "socialPointsPenalty", department.getSocialPointsPenalty(),
+                "departmentName", department.getName()
+            ),
+            "SUCCESS",
+            null
+        );
+        
         return new ApiResponse<>(true, "Department penalty points updated successfully", toDepartmentResponse(department));
     }
     

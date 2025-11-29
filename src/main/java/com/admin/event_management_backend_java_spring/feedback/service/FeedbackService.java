@@ -32,6 +32,7 @@ public class FeedbackService {
         dto.setUserName(feedback.getUser() != null ? feedback.getUser().getFullName() : null);
         dto.setEventName(feedback.getEvent() != null ? feedback.getEvent().getName() : null);
         dto.setContent(feedback.getContent());
+        dto.setRating(feedback.getRating());
         dto.setResponse(feedback.getResponse());
         dto.setCreatedAt(feedback.getCreatedAt());
         return dto;
@@ -47,6 +48,7 @@ public class FeedbackService {
         feedback.setUser(user);
         feedback.setEvent(event);
         feedback.setContent(req.getContent());
+        feedback.setRating(req.getRating());
         feedback.setCreatedAt(new java.util.Date());
         feedbackRepository.save(feedback);
         return new ApiResponse<>(true, "Feedback sent", toFeedbackResponse(feedback));

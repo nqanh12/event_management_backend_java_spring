@@ -119,8 +119,40 @@ public class EventService {
     public ApiResponse<EventResponse> approveEvent(String eventId, String approverId) {
         Event event = eventRepository.findById(eventId)
             .orElseThrow(() -> new AppException(ErrorCode.EVENT_NOT_FOUND, "Event not found"));
+        
+        // Lưu giá trị cũ để log
+        Map<String, Object> oldValues = Map.of(
+            "status", event.getStatus() != null ? event.getStatus().name() : null,
+            "name", event.getName()
+        );
+        
+        User approver = userRepository.findById(approverId)
+            .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "Approver not found"));
+        
         event.setStatus(Event.EventStatus.APPROVED);
+        event.setUpdatedBy(approverId);
+        event.setUpdatedAt(new Date());
         eventRepository.save(event);
+        
+        // Ghi log Audit
+        auditService.logActivity(
+            "EVENT_APPROVE",
+            "EVENT",
+            event.getId(),
+            "Chấp thuận sự kiện: " + event.getName(),
+            oldValues,
+            Map.of(
+                "status", event.getStatus().name(),
+                "name", event.getName(),
+                "department", event.getDepartment() != null ? event.getDepartment().getName() : null,
+                "organizer", event.getOrganizer() != null ? event.getOrganizer().getFullName() : null,
+                "approver", approver.getFullName(),
+                "approverEmail", approver.getEmail()
+            ),
+            "SUCCESS",
+            null
+        );
+        
         sendEventApprovedEmail(event);
         return new ApiResponse<>(true, "Event approved", toEventResponse(event));
     }
@@ -186,7 +218,7 @@ public class EventService {
         // Chỉ organizer hoặc admin mới được sửa
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        if (!event.getOrganizer().getId().equals(userId) && user.getRole() != User.UserRole.GLOBAL_ADMIN && user.getRole() != User.UserRole.FACULTY_ADMIN && user.getRole() != User.UserRole.SCHOOL_MANAGER) {
+        if (!event.getOrganizer().getId().equals(userId) && user.getRole() != User.UserRole.ADMIN && user.getRole() != User.UserRole.FACULTY_ADMIN) {
             throw new AppException(ErrorCode.PERMISSION_DENIED, "Bạn không có quyền cập nhật sự kiện này");
         }
         Department department = departmentRepository.findById(req.getDepartmentId())
@@ -234,7 +266,7 @@ public class EventService {
             .orElseThrow(() -> new AppException(ErrorCode.EVENT_NOT_FOUND, "Event not found"));
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        if (!event.getOrganizer().getId().equals(userId) && user.getRole() != User.UserRole.GLOBAL_ADMIN && user.getRole() != User.UserRole.FACULTY_ADMIN && user.getRole() != User.UserRole.SCHOOL_MANAGER) {
+        if (!event.getOrganizer().getId().equals(userId) && user.getRole() != User.UserRole.ADMIN && user.getRole() != User.UserRole.FACULTY_ADMIN) {
             throw new AppException(ErrorCode.PERMISSION_DENIED, "Bạn không có quyền huỷ sự kiện này");
         }
         event.setStatus(Event.EventStatus.CANCELLED);

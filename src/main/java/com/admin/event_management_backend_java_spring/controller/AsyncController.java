@@ -18,7 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/async")
-@PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'FACULTY_ADMIN', 'SCHOOL_MANAGER')")
+@PreAuthorize("hasAnyRole('ADMIN', 'FACULTY_ADMIN')")
 public class AsyncController {
     
     @Autowired

@@ -35,7 +35,7 @@ spring:
 
 jwt:
   signerKey: "tIpVTNnjWmJ+nIwbqvcFMdikQPxERxhtiGBnbhGtJSj2LG0126wKHw/Dro7bie6D"
-  valid-duration: 172800
+  valid-duration: 172800 # 
   refreshable-duration: 604800
   cookie:
     domain: ""  # Để trống cho localhost, set domain cho production

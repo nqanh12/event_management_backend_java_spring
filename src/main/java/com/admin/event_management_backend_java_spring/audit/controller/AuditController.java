@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/audit")
-@PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER')")
+@PreAuthorize("hasAnyRole('ADMIN')")
 public class AuditController {
     
     @Autowired

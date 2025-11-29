@@ -3,8 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thông báo điểm - EventHub</title>
+    <title>Thông báo điểm tích lũy - EventHub</title>
     <style>
+        /* CSS Variables for Design System */
+        :root {
+            --primary-color: #667eea;
+            --primary-dark: #5a6fd8;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #4CAF50;
+            --warning-color: #FF9800;
+            --error-color: #f44336;
+            --info-color: #2196F3;
+            --white: #ffffff;
+            --gray-50: #f8f9fa;
+            --gray-100: #f1f3f4;
+            --gray-200: #e8eaed;
+            --gray-300: #dadce0;
+            --gray-400: #bdc1c6;
+            --gray-500: #9aa0a6;
+            --gray-600: #80868b;
+            --gray-700: #5f6368;
+            --gray-800: #3c4043;
+            --gray-900: #202124;
+            --black: #000000;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 20px;
+            --font-size-2xl: 24px;
+            --font-size-3xl: 28px;
+            --font-size-4xl: 32px;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 24px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --white: #1a1a1a;
+                --gray-50: #2d2d2d;
+                --gray-100: #3d3d3d;
+                --gray-200: #4d4d4d;
+                --gray-300: #5d5d5d;
+                --gray-400: #6d6d6d;
+                --gray-500: #7d7d7d;
+                --gray-600: #8d8d8d;
+                --gray-700: #9d9d9d;
+                --gray-800: #adadad;
+                --gray-900: #cdcdcd;
+                --black: #ffffff;
+            }
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,324 +81,496 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--font-family);
             line-height: 1.6;
-            color: #333;
-            background-color: #f4f4f4;
+            color: var(--gray-900);
+            background-color: var(--gray-50);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         .email-container {
             max-width: 600px;
             margin: 0 auto;
-            background-color: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: var(--white);
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
         }
         
         .header {
-            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
-            color: white;
-            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+            color: var(--white);
+            padding: var(--spacing-2xl) var(--spacing-xl);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
         }
         
         .header h1 {
-            font-size: 28px;
+            font-size: var(--font-size-3xl);
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: var(--spacing-md);
+            line-height: 1.2;
         }
         
         .header p {
-            font-size: 16px;
+            font-size: var(--font-size-base);
             opacity: 0.9;
         }
         
         .content {
-            padding: 40px 30px;
+            padding: var(--spacing-2xl) var(--spacing-xl);
         }
         
-        .points-card {
-            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 20px 0;
+        .points-summary {
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+            color: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            margin: var(--spacing-lg) 0;
             text-align: center;
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            position: relative;
+            overflow: hidden;
         }
         
-        .points-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
+        .points-summary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
         }
         
-        .points-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
+        .points-summary h3 {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--spacing-md);
+            position: relative;
+            z-index: 1;
         }
         
-        .points-amount {
-            font-size: 36px;
-            font-weight: bold;
-            margin: 15px 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        .points-summary p {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
         }
         
-        .points-change {
-            font-size: 18px;
-            margin: 10px 0;
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
         
-        .points-positive {
-            color: #28a745;
-        }
-        
-        .points-negative {
-            color: #dc3545;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .stat-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-        
-        .stat-number {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-        
-        .activity-details {
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            padding: 25px;
-            margin: 20px 0;
-        }
-        
-        .activity-details h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 20px;
+        .points-display {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) 0;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
             text-align: center;
         }
         
-        .activity-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-        
-        .activity-info {
-            flex: 1;
-        }
-        
-        .activity-name {
+        .points-display h3 {
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-xl);
             font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-        
-        .activity-description {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .activity-points {
-            font-weight: bold;
-            font-size: 18px;
-            padding: 8px 15px;
-            border-radius: 20px;
-            margin-left: 15px;
-        }
-        
-        .points-earned {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-        }
-        
-        .points-deducted {
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-            color: white;
-        }
-        
-        .achievement-section {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border: 1px solid #ffc107;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .achievement-icon {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-        
-        .achievement-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: #856404;
-            margin-bottom: 10px;
-        }
-        
-        .achievement-description {
-            color: #856404;
-            font-size: 16px;
-        }
-        
-        .leaderboard-section {
-            background-color: #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        
-        .leaderboard-section h3 {
-            color: #495057;
-            margin-bottom: 15px;
-            font-size: 18px;
-            text-align: center;
-        }
-        
-        .leaderboard-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #dee2e6;
+            justify-content: center;
+            gap: var(--spacing-sm);
         }
         
-        .leaderboard-item:last-child {
-            border-bottom: none;
+        .points-animation {
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+            color: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            margin: var(--spacing-lg) 0;
+            position: relative;
+            overflow: hidden;
         }
         
-        .rank {
-            font-weight: bold;
-            color: #495057;
-            margin-right: 15px;
+        .points-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
         }
         
-        .rank-1 { color: #ffd700; }
-        .rank-2 { color: #c0c0c0; }
-        .rank-3 { color: #cd7f32; }
+        .points-number {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            margin: var(--spacing-lg) 0;
+            position: relative;
+            z-index: 1;
+            animation: pulse 2s infinite;
+        }
         
-        .user-name {
-            flex: 1;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .points-label {
+            font-size: var(--font-size-lg);
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .points-details {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) 0;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .points-details h3 {
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        
+        .detail-item {
+            background: var(--gray-50);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        .detail-icon {
+            font-size: var(--font-size-2xl);
+            margin-bottom: var(--spacing-sm);
+            display: block;
+        }
+        
+        .detail-label {
+            font-size: var(--font-size-sm);
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-xs);
             font-weight: 500;
         }
         
-        .user-points {
-            font-weight: bold;
-            color: #495057;
+        .detail-value {
+            font-size: var(--font-size-base);
+            color: var(--gray-800);
+            font-weight: 600;
+        }
+        
+        .achievement-badges {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) 0;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .achievement-badges h3 {
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        
+        .badge-item {
+            text-align: center;
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+            transition: all var(--transition-fast);
+        }
+        
+        .badge-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .badge-icon {
+            font-size: var(--font-size-3xl);
+            margin-bottom: var(--spacing-sm);
+            display: block;
+        }
+        
+        .badge-name {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .badge-description {
+            font-size: var(--font-size-xs);
+            color: var(--gray-600);
+        }
+        
+        .leaderboard-preview {
+            background-color: rgba(33, 150, 243, 0.05);
+            border-left: 4px solid var(--info-color);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+        
+        .leaderboard-preview h4 {
+            color: var(--info-color);
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .leaderboard-item {
+            background: var(--white);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin: var(--spacing-sm) 0;
+            border: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .leaderboard-rank {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--primary-color);
+            min-width: 30px;
+        }
+        
+        .leaderboard-user {
+            flex: 1;
+        }
+        
+        .leaderboard-name {
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .leaderboard-points {
+            font-size: var(--font-size-sm);
+            color: var(--gray-600);
+        }
+        
+        .points-rewards {
+            background-color: rgba(76, 175, 80, 0.05);
+            border-left: 4px solid var(--success-color);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+        
+        .points-rewards h4 {
+            color: var(--success-color);
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .rewards-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .rewards-list li {
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-base);
+            color: var(--gray-700);
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+        }
+        
+        .rewards-list li::before {
+            content: '🎁';
+            font-size: var(--font-size-sm);
+            margin-top: 2px;
         }
         
         .action-buttons {
-            margin: 30px 0;
-            text-align: center;
+            display: flex;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         
-        .btn {
+        .button {
             display: inline-block;
-            padding: 12px 30px;
-            margin: 0 10px;
+            padding: var(--spacing-md) var(--spacing-xl);
             text-decoration: none;
-            border-radius: 25px;
+            border-radius: var(--radius-2xl);
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all var(--transition-normal);
+            text-align: center;
+            min-width: 120px;
+            position: relative;
+            overflow: hidden;
         }
         
-        .btn-primary {
-            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
-            color: white;
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left var(--transition-normal);
         }
         
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
+        .button:hover::before {
+            left: 100%;
         }
         
-        .btn:hover {
+        .button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .button.primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+        }
+        
+        .button.secondary {
+            background: var(--gray-200);
+            color: var(--gray-800);
+        }
+        
+        .button.success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #45a049 100%);
+            color: var(--white);
         }
         
         .footer {
-            background-color: #2c3e50;
-            color: white;
-            padding: 30px 20px;
+            background-color: var(--gray-800);
+            color: var(--white);
+            padding: var(--spacing-xl);
             text-align: center;
         }
         
         .footer p {
-            margin-bottom: 10px;
-            font-size: 14px;
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            opacity: 0.8;
         }
         
-        .social-links {
-            margin-top: 20px;
-        }
-        
-        .social-links a {
-            color: white;
-            margin: 0 10px;
-            text-decoration: none;
-            font-size: 18px;
-        }
-        
-        .logo {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
+        /* Responsive Design */
         @media (max-width: 600px) {
             .content {
-                padding: 20px 15px;
+                padding: var(--spacing-lg) var(--spacing-md);
             }
             
             .header {
-                padding: 20px 15px;
+                padding: var(--spacing-lg) var(--spacing-md);
             }
             
-            .stats-grid {
+            .header h1 {
+                font-size: var(--font-size-2xl);
+            }
+            
+            .details-grid,
+            .badges-grid {
                 grid-template-columns: 1fr;
             }
             
-            .activity-item {
+            .action-buttons {
                 flex-direction: column;
-                align-items: flex-start;
             }
             
-            .activity-points {
-                margin-left: 0;
-                margin-top: 10px;
+            .button {
+                width: 100%;
             }
             
-            .btn {
-                display: block;
-                margin: 10px 0;
+            .points-number {
+                font-size: var(--font-size-3xl);
+            }
+        }
+        
+        /* Accessibility Improvements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --primary-color: #000080;
+                --secondary-color: #800080;
+                --gray-700: #000000;
+                --gray-900: #000000;
             }
         }
     </style>
@@ -337,100 +578,126 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <div class="logo">🏆 EventHub</div>
-            <h1>Thông báo điểm!</h1>
-            <p>Điểm số của bạn đã được cập nhật</p>
+            <div class="header-content">
+                <div class="logo">⭐ EventHub</div>
+                <h1>Thông báo điểm tích lũy</h1>
+                <p>Chúc mừng! Bạn đã nhận được điểm thưởng</p>
+            </div>
         </div>
         
         <div class="content">
-            <div class="points-card">
-                <div class="points-icon">🎯</div>
-                <div class="points-title">Điểm số hiện tại</div>
-                <div class="points-amount">{{total_points}} điểm</div>
-                <div class="points-change {{points_change_class}}">
-                    {{points_change_text}}
+            <div class="points-summary">
+                <h3>🎉 Điểm tích lũy mới!</h3>
+                <p>Chúc mừng! Bạn đã nhận được điểm thưởng từ hoạt động gần đây. Hãy xem chi tiết bên dưới.</p>
+            </div>
+            
+            <div class="points-display">
+                <h3>💎 Điểm tích lũy của bạn</h3>
+                <div class="points-animation">
+                    <div class="points-number">{{total_points}}</div>
+                    <div class="points-label">Điểm tích lũy</div>
                 </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-number">{{events_attended}}</div>
-                        <div class="stat-label">Sự kiện đã tham gia</div>
+            </div>
+            
+            <div class="points-details">
+                <h3>📊 Chi tiết điểm thưởng</h3>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <span class="detail-icon">➕</span>
+                        <div class="detail-label">Điểm nhận được</div>
+                        <div class="detail-value">+{{points_earned}}</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number">{{current_rank}}</div>
-                        <div class="stat-label">Xếp hạng hiện tại</div>
+                    <div class="detail-item">
+                        <span class="detail-icon">📈</span>
+                        <div class="detail-label">Hoạt động</div>
+                        <div class="detail-value">{{activity_name}}</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number">{{points_this_month}}</div>
-                        <div class="stat-label">Điểm tháng này</div>
+                    <div class="detail-item">
+                        <span class="detail-icon">📅</span>
+                        <div class="detail-label">Ngày nhận</div>
+                        <div class="detail-value">{{earned_date}}</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number">{{next_level_points}}</div>
-                        <div class="stat-label">Điểm cần để lên cấp</div>
+                    <div class="detail-item">
+                        <span class="detail-icon">🏆</span>
+                        <div class="detail-label">Cấp độ hiện tại</div>
+                        <div class="detail-value">{{current_level}}</div>
                     </div>
                 </div>
             </div>
             
-            <div class="activity-details">
-                <h3>📊 Hoạt động gần đây</h3>
-                <div class="activity-item">
-                    <div class="activity-info">
-                        <div class="activity-name">{{activity_name}}</div>
-                        <div class="activity-description">{{activity_description}}</div>
+            <div class="achievement-badges">
+                <h3>🏅 Huy hiệu thành tích</h3>
+                <div class="badges-grid">
+                    <div class="badge-item">
+                        <span class="badge-icon">🥇</span>
+                        <div class="badge-name">Người tham gia tích cực</div>
+                        <div class="badge-description">Tham gia 10+ sự kiện</div>
                     </div>
-                    <div class="activity-points {{points_class}}">
-                        {{activity_points}}
+                    <div class="badge-item">
+                        <span class="badge-icon">⭐</span>
+                        <div class="badge-name">Đánh giá cao</div>
+                        <div class="badge-description">Đánh giá 5 sao</div>
+                    </div>
+                    <div class="badge-item">
+                        <span class="badge-icon">🎯</span>
+                        <div class="badge-name">Mục tiêu hoàn thành</div>
+                        <div class="badge-description">Đạt 1000 điểm</div>
+                    </div>
+                    <div class="badge-item">
+                        <span class="badge-icon">🌟</span>
+                        <div class="badge-name">Người mới</div>
+                        <div class="badge-description">Tham gia lần đầu</div>
                     </div>
                 </div>
             </div>
             
-            {{#if achievement_unlocked}}
-            <div class="achievement-section">
-                <div class="achievement-icon">🏅</div>
-                <div class="achievement-title">Thành tựu mới!</div>
-                <div class="achievement-description">{{achievement_name}} - {{achievement_description}}</div>
+            <div class="leaderboard-preview">
+                <h4>🏆 Bảng xếp hạng</h4>
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">1</div>
+                    <div class="leaderboard-user">
+                        <div class="leaderboard-name">{{top_user_1}}</div>
+                        <div class="leaderboard-points">{{top_points_1}} điểm</div>
+                    </div>
+                </div>
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">2</div>
+                    <div class="leaderboard-user">
+                        <div class="leaderboard-name">{{top_user_2}}</div>
+                        <div class="leaderboard-points">{{top_points_2}} điểm</div>
+                    </div>
+                </div>
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">3</div>
+                    <div class="leaderboard-user">
+                        <div class="leaderboard-name">{{top_user_3}}</div>
+                        <div class="leaderboard-points">{{top_points_3}} điểm</div>
+                    </div>
+                </div>
             </div>
-            {{/if}}
             
-            <div class="leaderboard-section">
-                <h3>🏆 Bảng xếp hạng</h3>
-                <div class="leaderboard-item">
-                    <span class="rank rank-1">🥇</span>
-                    <span class="user-name">{{top_user_1}}</span>
-                    <span class="user-points">{{top_points_1}} điểm</span>
-                </div>
-                <div class="leaderboard-item">
-                    <span class="rank rank-2">🥈</span>
-                    <span class="user-name">{{top_user_2}}</span>
-                    <span class="user-points">{{top_points_2}} điểm</span>
-                </div>
-                <div class="leaderboard-item">
-                    <span class="rank rank-3">🥉</span>
-                    <span class="user-name">{{top_user_3}}</span>
-                    <span class="user-points">{{top_points_3}} điểm</span>
-                </div>
+            <div class="points-rewards">
+                <h4>🎁 Phần thưởng có thể đổi</h4>
+                <ul class="rewards-list">
+                    <li>Giảm giá 20% cho sự kiện tiếp theo</li>
+                    <li>Ưu tiên đăng ký sự kiện VIP</li>
+                    <li>Nhận quà tặng đặc biệt</li>
+                    <li>Tham gia sự kiện độc quyền</li>
+                    <li>Nhận chứng chỉ tham gia</li>
+                </ul>
             </div>
             
             <div class="action-buttons">
-                <a href="{{leaderboard_link}}" class="btn btn-primary">🏆 Xem bảng xếp hạng</a>
-                <a href="{{profile_link}}" class="btn btn-secondary">👤 Xem hồ sơ</a>
+                <a href="{{leaderboard_url}}" class="button primary">🏆 Xem bảng xếp hạng</a>
+                <a href="{{rewards_url}}" class="button success">🎁 Đổi phần thưởng</a>
+                <a href="{{profile_url}}" class="button secondary">👤 Xem hồ sơ</a>
             </div>
-            
-            <p style="text-align: center; color: #666; font-size: 14px; margin-top: 20px;">
-                Tiếp tục tham gia các sự kiện để tích lũy thêm điểm và leo lên bảng xếp hạng!
-            </p>
         </div>
         
         <div class="footer">
             <p><strong>EventHub - Hệ thống quản lý sự kiện</strong></p>
             <p>© 2024 EventHub. Tất cả quyền được bảo lưu.</p>
-            <p>Email: support@eventhub.com | Phone: +84 123 456 789</p>
-            <div class="social-links">
-                <a href="#">📧</a>
-                <a href="#">📱</a>
-                <a href="#">🌐</a>
-                <a href="#">📘</a>
-            </div>
+            <p>Nếu có thắc mắc, liên hệ: support@eventhub.com</p>
         </div>
     </div>
 </body>

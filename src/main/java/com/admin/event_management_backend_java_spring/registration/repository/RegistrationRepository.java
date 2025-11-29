@@ -4,6 +4,7 @@ import com.admin.event_management_backend_java_spring.registration.model.Registr
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -23,6 +24,19 @@ public interface RegistrationRepository extends MongoRepository<Registration, St
     
     // Count methods for performance
     long countByStatus(Registration.RegistrationStatus status);
+    
+    // Count by userId for performance optimization
+    long countByUserId(String userId);
+    
+    // Date range queries for dashboard performance
+    @Query("{'checkInTime': {$gte: ?0, $lte: ?1}}")
+    List<Registration> findByCheckInTimeBetween(Date startDate, Date endDate);
+    
+    @Query(value = "{'checkInTime': {$gte: ?0, $lte: ?1}}", count = true)
+    long countByCheckInTimeBetween(Date startDate, Date endDate);
+    
+    @Query("{'checkInTime': {$gte: ?0}}")
+    List<Registration> findByCheckInTimeGreaterThanEqual(Date startDate);
 
     List<Registration> findByUserIdAndIsDeletedFalse(String userId);
     List<Registration> findByUserIdAndStatusAndIsDeletedFalse(String userId, Registration.RegistrationStatus status);

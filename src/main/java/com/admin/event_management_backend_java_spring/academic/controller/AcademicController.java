@@ -32,7 +32,7 @@ public class AcademicController {
      * Lấy thông tin học kỳ hiện tại của user
      */
     @GetMapping("/current-semester/{userId}")
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN', 'ORGANIZER') or #userId == authentication.principal.id")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN', 'ORGANIZER') or #userId == authentication.principal.id")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getCurrentSemester(@PathVariable String userId) {
         try {
             User user = userRepository.findById(userId)
@@ -62,7 +62,7 @@ public class AcademicController {
      * Cập nhật thông tin niên khóa học cho user
      */
     @PutMapping("/update-academic-info/{userId}")
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN')")
     public ResponseEntity<ApiResponse<User>> updateAcademicInfo(
             @PathVariable String userId,
             @RequestParam String academicYear,
@@ -116,7 +116,7 @@ public class AcademicController {
      * Tính toán học kỳ dựa trên ngày cụ thể
      */
     @PostMapping("/calculate-semester-by-date/{userId}")
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN', 'ORGANIZER') or #userId == authentication.principal.id")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN', 'ORGANIZER') or #userId == authentication.principal.id")
     public ResponseEntity<ApiResponse<Map<String, Object>>> calculateSemesterByDate(
             @PathVariable String userId,
             @RequestParam String targetDateStr) {
@@ -154,7 +154,7 @@ public class AcademicController {
      * Lấy thông tin chi tiết về học kỳ hiện tại
      */
     @GetMapping("/semester-info/{userId}")
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN', 'ORGANIZER') or #userId == authentication.principal.id")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN', 'ORGANIZER') or #userId == authentication.principal.id")
     public ResponseEntity<ApiResponse<String>> getSemesterInfo(@PathVariable String userId) {
         try {
             User user = userRepository.findById(userId)
@@ -174,7 +174,7 @@ public class AcademicController {
      * Lấy danh sách tất cả users với thông tin học kỳ hiện tại
      */
     @GetMapping("/all-users-semester-info")
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getAllUsersSemesterInfo() {
         try {
             java.util.List<User> allUsers = userRepository.findAll();

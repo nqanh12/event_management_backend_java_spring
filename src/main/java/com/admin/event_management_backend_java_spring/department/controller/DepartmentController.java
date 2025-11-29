@@ -20,7 +20,7 @@ public class DepartmentController {
     @Autowired
     private DepartmentService departmentService;
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Tạo khoa/phòng ban", description = "Tạo mới một khoa hoặc phòng ban.")
     @PostMapping
     public ResponseEntity<ApiResponse<?>> createDepartment(@Valid @RequestBody DepartmentRequest req) {
@@ -28,7 +28,7 @@ public class DepartmentController {
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Cập nhật khoa/phòng ban", description = "Cập nhật thông tin khoa/phòng ban theo ID.")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> updateDepartment(
@@ -38,7 +38,7 @@ public class DepartmentController {
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Xóa khoa/phòng ban", description = "Xóa khoa/phòng ban theo ID.")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> deleteDepartment(
@@ -70,7 +70,7 @@ public class DepartmentController {
         return ResponseEntity.ok(response);
     }
     
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN')")
     @PutMapping("/{id}/penalty-points")
     public ResponseEntity<ApiResponse<?>> updateDepartmentPenaltyPoints(
             @PathVariable String id, 

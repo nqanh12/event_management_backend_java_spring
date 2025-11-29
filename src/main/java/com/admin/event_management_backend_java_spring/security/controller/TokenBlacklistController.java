@@ -1,8 +1,11 @@
 package com.admin.event_management_backend_java_spring.security.controller;
 
+import com.admin.event_management_backend_java_spring.payload.ApiResponse;
+import com.admin.event_management_backend_java_spring.payload.PaginatedResponse;
 import com.admin.event_management_backend_java_spring.security.model.TokenBlacklist;
 import com.admin.event_management_backend_java_spring.security.service.TokenBlacklistService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,19 +16,22 @@ import java.util.Map;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/admin/token-blacklist")
-@PreAuthorize("hasRole('GLOBAL_ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 public class TokenBlacklistController {
     
     @Autowired
     private TokenBlacklistService tokenBlacklistService;
     
     /**
-     * Lấy tất cả token blacklist
+     * Lấy tất cả token blacklist với pagination
      */
     @GetMapping
-    public ResponseEntity<List<TokenBlacklist>> getAllBlacklistedTokens() {
-        // TODO: Implement pagination
-        return ResponseEntity.ok(tokenBlacklistService.getAllBlacklistedTokens());
+    public ResponseEntity<ApiResponse<PaginatedResponse<TokenBlacklist>>> getAllBlacklistedTokens(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        Page<TokenBlacklist> tokensPage = tokenBlacklistService.getAllBlacklistedTokens(page, size);
+        PaginatedResponse<TokenBlacklist> paginatedResponse = PaginatedResponse.fromPage(tokensPage);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Blacklisted tokens retrieved successfully", paginatedResponse));
     }
     
     /**

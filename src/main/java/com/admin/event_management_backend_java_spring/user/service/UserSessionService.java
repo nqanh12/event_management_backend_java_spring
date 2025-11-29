@@ -4,6 +4,10 @@ import com.admin.event_management_backend_java_spring.user.model.UserSession;
 import com.admin.event_management_backend_java_spring.user.repository.UserSessionRepository;
 import com.admin.event_management_backend_java_spring.security.service.TokenBlacklistService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -120,9 +124,14 @@ public class UserSessionService {
      * Lấy tất cả active sessions
      */
     public List<UserSession> getAllActiveSessions() {
-        // TODO: Implement this method in repository
-        return userSessionRepository.findAll().stream()
-                .filter(UserSession::isActive)
-                .toList();
+        return userSessionRepository.findByActiveTrue();
+    }
+    
+    /**
+     * Lấy tất cả active sessions với pagination
+     */
+    public Page<UserSession> getAllActiveSessions(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("loginTime").descending());
+        return userSessionRepository.findByActiveTrue(pageable);
     }
 } 

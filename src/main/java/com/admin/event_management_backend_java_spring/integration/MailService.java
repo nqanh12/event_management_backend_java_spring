@@ -24,7 +24,7 @@ public class MailService {
 
     public void sendMail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
+        message.setTo(to);  
         message.setSubject(subject);
         message.setText(text);
         mailSender.send(message);
@@ -46,12 +46,34 @@ public class MailService {
     @Async("emailTaskExecutor")
     public CompletableFuture<Void> sendEventNotificationAsync(List<String> recipients, String eventName, String eventTime, String eventLocation) {
         String subject = "Thông báo sự kiện: " + eventName;
-        String content = String.format(
-            "Sự kiện: %s\nThời gian: %s\nĐịa điểm: %s\n\nVui lòng tham gia đầy đủ và đúng giờ!",
-            eventName, eventTime, eventLocation
-        );
-        
-        return sendBulkMailAsync(recipients, subject, content);
+        Map<String, String> variables = new java.util.HashMap<>();
+        variables.put("event_name", eventName != null ? eventName : "");
+        variables.put("event_time", eventTime != null ? eventTime : "");
+        variables.put("event_location", eventLocation != null ? eventLocation : "");
+        // Các biến phụ, bạn bổ sung/get động tuỳ logic
+        variables.put("event_tagline", "Đừng bỏ lỡ, hãy tham gia ngay!");
+        variables.put("event_organizer", "Ban tổ chức EventHub");
+        variables.put("event_fee", "Miễn phí");
+        variables.put("event_description", "Sự kiện đặc biệt dành cho bạn!");
+        variables.put("registered_count", "0");
+        variables.put("capacity", "?");
+        variables.put("days_remaining", "...");
+        variables.put("register_url", "#");
+        variables.put("event_details_url", "#");
+        variables.put("share_url", "#");
+        variables.put("google_calendar_url", "#");
+        variables.put("outlook_calendar_url", "#");
+        variables.put("ical_url", "#");
+
+        for (String recipient : recipients) {
+            try {
+                sendHtmlMail(recipient, subject, "event-notification.html", variables);
+                Thread.sleep(100);
+            } catch (Exception e) {
+                System.err.println("Failed to send HTML event mail to " + recipient + ": " + e.getMessage());
+            }
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     /**

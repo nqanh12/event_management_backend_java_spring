@@ -46,4 +46,8 @@ public interface PointsHistoryRepository extends MongoRepository<PointsHistory, 
     // Thống kê tổng điểm thay đổi theo loại
     @Query(value = "{'userId': ?0, 'pointsType': ?1}", fields = "{'pointsChange': 1}")
     List<PointsHistory> findPointsChangeByUserIdAndPointsType(String userId, PointsHistory.PointsType pointsType);
+    
+    // Tìm lịch sử điểm trong khoảng thời gian (cho dashboard filtering)
+    @Query("{'changedAt': {$gte: ?0, $lte: ?1}}")
+    List<PointsHistory> findByChangedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 }

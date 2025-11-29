@@ -66,14 +66,14 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasRole('GLOBAL_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin-create")
     public ResponseEntity<ApiResponse<UserResponse>> adminCreateUser(@Valid @RequestBody AdminCreateUserRequest req) {
         ApiResponse<UserResponse> response = userService.adminCreateUser(req);
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
-    @PreAuthorize("hasRole('GLOBAL_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/bulk-create")
     public ResponseEntity<ApiResponse<BulkCreateUserResult>> bulkCreateUsers(@RequestParam("file") MultipartFile file) {
         ApiResponse<BulkCreateUserResult> response = userService.bulkCreateUsersFromExcel(file);
@@ -87,7 +87,7 @@ public class UserController {
     }
 
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN')")
     @GetMapping("/paginated")
     public ResponseEntity<ApiResponse<PaginatedResponse<UserResponse>>> getUsersWithPagination(
             @RequestParam(defaultValue = "0") int page,
@@ -99,7 +99,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN')")
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<PaginatedResponse<UserResponse>>> searchUsers(
             @RequestParam String searchTerm,
@@ -110,7 +110,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN')")
     @GetMapping("/role/{role}")
     public ResponseEntity<ApiResponse<PaginatedResponse<UserResponse>>> getUsersByRole(
             @PathVariable String role,
@@ -126,7 +126,7 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN')")
     @GetMapping("/department/{departmentId}")
     public ResponseEntity<ApiResponse<PaginatedResponse<UserResponse>>> getUsersByDepartment(
             @PathVariable String departmentId,
@@ -137,7 +137,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN')")
     @GetMapping("/top-students")
     public ResponseEntity<ApiResponse<PaginatedResponse<UserResponse>>> getTopStudents(
             @RequestParam(defaultValue = "0") int page,
@@ -147,7 +147,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN')")
     @GetMapping("/active")
     public ResponseEntity<ApiResponse<PaginatedResponse<UserResponse>>> getActiveUsers(
             @RequestParam(defaultValue = "7") int daysAgo,

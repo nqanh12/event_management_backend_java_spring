@@ -1,6 +1,8 @@
 package com.admin.event_management_backend_java_spring.security.repository;
 
 import com.admin.event_management_backend_java_spring.security.model.TokenBlacklist;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -25,6 +27,8 @@ public interface TokenBlacklistRepository extends MongoRepository<TokenBlacklist
     
     @Query("{'username': ?0, 'reason': ?1}")
     List<TokenBlacklist> findByUsernameAndReason(String username, String reason);
+    
+    Page<TokenBlacklist> findAll(Pageable pageable);
     
     void deleteByToken(String token);
     

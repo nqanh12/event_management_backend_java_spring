@@ -5,34 +5,574 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cảnh báo bảo mật tài khoản</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f4; color: #333; }
-        .email-container { max-width: 500px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 16px rgba(102,126,234,0.08); overflow: hidden; }
-        .header { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); color: #fff; padding: 32px 24px; text-align: center; }
-        .header h1 { font-size: 26px; margin-bottom: 8px; }
-        .content { padding: 32px 24px; }
-        .alert-box { background: #f093fb; color: #fff; font-size: 18px; font-weight: bold; padding: 16px; border-radius: 8px; margin: 18px 0; text-align: center; }
-        .details { margin: 18px 0; font-size: 15px; }
-        .details span { display: block; margin-bottom: 6px; }
-        .footer { background: #f8f9fa; color: #888; font-size: 13px; text-align: center; padding: 18px; }
+        /* CSS Variables for Design System */
+        :root {
+            --primary-color: #667eea;
+            --primary-dark: #5a6fd8;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #4CAF50;
+            --warning-color: #FF9800;
+            --error-color: #f44336;
+            --info-color: #2196F3;
+            --white: #ffffff;
+            --gray-50: #f8f9fa;
+            --gray-100: #f1f3f4;
+            --gray-200: #e8eaed;
+            --gray-300: #dadce0;
+            --gray-400: #bdc1c6;
+            --gray-500: #9aa0a6;
+            --gray-600: #80868b;
+            --gray-700: #5f6368;
+            --gray-800: #3c4043;
+            --gray-900: #202124;
+            --black: #000000;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 20px;
+            --font-size-2xl: 24px;
+            --font-size-3xl: 28px;
+            --font-size-4xl: 32px;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 24px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --white: #1a1a1a;
+                --gray-50: #2d2d2d;
+                --gray-100: #3d3d3d;
+                --gray-200: #4d4d4d;
+                --gray-300: #5d5d5d;
+                --gray-400: #6d6d6d;
+                --gray-500: #7d7d7d;
+                --gray-600: #8d8d8d;
+                --gray-700: #9d9d9d;
+                --gray-800: #adadad;
+                --gray-900: #cdcdcd;
+                --black: #ffffff;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--gray-900);
+            background-color: var(--gray-50);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--white);
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--error-color) 0%, #d32f2f 100%);
+            color: var(--white);
+            padding: var(--spacing-2xl) var(--spacing-xl);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .header h1 {
+            font-size: var(--font-size-3xl);
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            line-height: 1.2;
+        }
+        
+        .header p {
+            font-size: var(--font-size-base);
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: var(--spacing-2xl) var(--spacing-xl);
+        }
+        
+        .alert-summary {
+            background: linear-gradient(135deg, var(--error-color) 0%, #d32f2f 100%);
+            color: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            margin: var(--spacing-lg) 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .alert-summary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+        
+        .alert-summary h3 {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--spacing-md);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .alert-summary p {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .action-details {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) 0;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .action-details h3 {
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .action-info {
+            background: var(--gray-50);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+            margin: var(--spacing-md) 0;
+        }
+        
+        .action-info h4 {
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+        
+        .action-info p {
+            color: var(--gray-700);
+            font-size: var(--font-size-base);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .timestamp-details {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) 0;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .timestamp-details h3 {
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .timestamp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        
+        .timestamp-item {
+            background: var(--gray-50);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        .timestamp-label {
+            font-size: var(--font-size-sm);
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-xs);
+            font-weight: 500;
+        }
+        
+        .timestamp-value {
+            font-size: var(--font-size-base);
+            color: var(--gray-800);
+            font-weight: 600;
+        }
+        
+        .emergency-contact {
+            background-color: rgba(244, 67, 54, 0.05);
+            border-left: 4px solid var(--error-color);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+        
+        .emergency-contact h4 {
+            color: var(--error-color);
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+        
+        .contact-item {
+            background: var(--white);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        .contact-label {
+            font-size: var(--font-size-sm);
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-xs);
+            font-weight: 500;
+        }
+        
+        .contact-value {
+            font-size: var(--font-size-base);
+            color: var(--gray-800);
+            font-weight: 600;
+        }
+        
+        .security-recommendations {
+            background-color: rgba(255, 152, 0, 0.05);
+            border-left: 4px solid var(--warning-color);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+        
+        .security-recommendations h4 {
+            color: var(--warning-color);
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .security-recommendations ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .security-recommendations li {
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-base);
+            color: var(--gray-700);
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+        }
+        
+        .security-recommendations li::before {
+            content: '🔒';
+            font-size: var(--font-size-sm);
+            margin-top: 2px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            flex-wrap: wrap;
+        }
+        
+        .button {
+            display: inline-block;
+            padding: var(--spacing-md) var(--spacing-xl);
+            text-decoration: none;
+            border-radius: var(--radius-2xl);
+            font-weight: 600;
+            transition: all var(--transition-normal);
+            text-align: center;
+            min-width: 120px;
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left var(--transition-normal);
+        }
+        
+        .button:hover::before {
+            left: 100%;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .button.primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+        }
+        
+        .button.secondary {
+            background: var(--gray-200);
+            color: var(--gray-800);
+        }
+        
+        .button.error {
+            background: linear-gradient(135deg, var(--error-color) 0%, #d32f2f 100%);
+            color: var(--white);
+        }
+        
+        .footer {
+            background-color: var(--gray-800);
+            color: var(--white);
+            padding: var(--spacing-xl);
+            text-align: center;
+        }
+        
+        .footer p {
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            opacity: 0.8;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .content {
+                padding: var(--spacing-lg) var(--spacing-md);
+            }
+            
+            .header {
+                padding: var(--spacing-lg) var(--spacing-md);
+            }
+            
+            .header h1 {
+                font-size: var(--font-size-2xl);
+            }
+            
+            .timestamp-grid,
+            .contact-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .button {
+                width: 100%;
+            }
+        }
+        
+        /* Accessibility Improvements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --primary-color: #000080;
+                --secondary-color: #800080;
+                --gray-700: #000000;
+                --gray-900: #000000;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="email-container">
         <div class="header">
-            <div class="logo">🔒 EventHub</div>
-            <h1>Cảnh báo bảo mật</h1>
-            <p>Tài khoản của bạn vừa thực hiện thao tác quan trọng</p>
-        </div>
-        <div class="content">
-            <div class="alert-box">Thao tác: {{action}}</div>
-            <div class="details">
-                <span><b>Thời gian:</b> {{time}}</span>
+            <div class="header-content">
+                <div class="logo">🚨 EventHub</div>
+                <h1>Cảnh báo bảo mật tài khoản</h1>
+                <p>Phát hiện hoạt động bảo mật quan trọng</p>
             </div>
-            <div style="color:#f093fb; font-size:15px; margin-top:12px;">Nếu không phải bạn, hãy liên hệ quản trị viên hoặc đổi mật khẩu ngay!</div>
         </div>
+        
+        <div class="content">
+            <div class="alert-summary">
+                <h3>🛡️ Cảnh báo bảo mật</h3>
+                <p>Chúng tôi phát hiện một hoạt động bảo mật quan trọng trên tài khoản EventHub của bạn. Vui lòng xem xét thông tin bên dưới.</p>
+            </div>
+            
+            <div class="action-details">
+                <h3>📋 Chi tiết hành động</h3>
+                <div class="action-info">
+                    <h4>Hành động được thực hiện:</h4>
+                    <p><strong>{{action}}</strong></p>
+                </div>
+                <div class="action-info">
+                    <h4>Mô tả:</h4>
+                    <p>{{action_description}}</p>
+                </div>
+                <div class="action-info">
+                    <h4>Trạng thái:</h4>
+                    <p>{{action_status}}</p>
+                </div>
+            </div>
+            
+            <div class="timestamp-details">
+                <h3>⏰ Thông tin thời gian</h3>
+                <div class="timestamp-grid">
+                    <div class="timestamp-item">
+                        <div class="timestamp-label">Thời gian thực hiện</div>
+                        <div class="timestamp-value">{{time}}</div>
+                    </div>
+                    <div class="timestamp-item">
+                        <div class="timestamp-label">Múi giờ</div>
+                        <div class="timestamp-value">{{timezone}}</div>
+                    </div>
+                    <div class="timestamp-item">
+                        <div class="timestamp-label">Thiết bị</div>
+                        <div class="timestamp-value">{{device_info}}</div>
+                    </div>
+                    <div class="timestamp-item">
+                        <div class="timestamp-label">Địa chỉ IP</div>
+                        <div class="timestamp-value">{{ip_address}}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="emergency-contact">
+                <h4>🚨 Liên hệ khẩn cấp</h4>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-label">Hỗ trợ kỹ thuật</div>
+                        <div class="contact-value">support@eventhub.com</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">Đường dây nóng</div>
+                        <div class="contact-value">+84 123 456 789</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">Trung tâm bảo mật</div>
+                        <div class="contact-value">security@eventhub.com</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="security-recommendations">
+                <h4>🔒 Khuyến nghị bảo mật</h4>
+                <ul>
+                    <li>Nếu bạn không thực hiện hành động này, hãy đổi mật khẩu ngay lập tức</li>
+                    <li>Bật xác thực 2 lớp nếu chưa bật</li>
+                    <li>Kiểm tra lịch sử đăng nhập trong cài đặt tài khoản</li>
+                    <li>Liên hệ hỗ trợ nếu có thắc mắc</li>
+                    <li>Không chia sẻ thông tin tài khoản với bất kỳ ai</li>
+                </ul>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{{verify_action_url}}" class="button primary">✅ Xác nhận hành động</a>
+                <a href="{{change_password_url}}" class="button error">🔒 Đổi mật khẩu</a>
+                <a href="{{account_settings_url}}" class="button secondary">⚙️ Cài đặt tài khoản</a>
+            </div>
+        </div>
+        
         <div class="footer">
-            <p>EventHub - Hệ thống quản lý sự kiện</p>
+            <p><strong>EventHub - Hệ thống quản lý sự kiện</strong></p>
             <p>© 2024 EventHub. Tất cả quyền được bảo lưu.</p>
+            <p>Nếu có thắc mắc, liên hệ: support@eventhub.com</p>
         </div>
     </div>
 </body>

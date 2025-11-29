@@ -13,21 +13,21 @@ public class ReportController {
     @Autowired
     private ReportService reportService;
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/events")
     public ResponseEntity<ApiResponse<?>> eventCountByStatus() {
         ApiResponse<?> response = reportService.eventCountByStatus();
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/students/top")
     public ResponseEntity<ApiResponse<?>> topStudentsByPoints(@RequestParam(defaultValue = "10") int limit) {
         ApiResponse<?> response = reportService.topStudentsByPoints(limit);
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/departments")
     public ResponseEntity<ApiResponse<?>> eventCountByDepartment() {
         ApiResponse<?> response = reportService.eventCountByDepartment();

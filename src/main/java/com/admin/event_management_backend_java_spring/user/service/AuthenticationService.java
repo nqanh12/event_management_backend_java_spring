@@ -1,16 +1,16 @@
 package com.admin.event_management_backend_java_spring.user.service;
 
-import com.admin.event_management_backend_java_spring.user.model.User;
-import com.admin.event_management_backend_java_spring.user.repository.UserRepository;
-import com.admin.event_management_backend_java_spring.security.model.TokenBlacklist;
-import com.admin.event_management_backend_java_spring.security.repository.TokenBlacklistRepository;
 import com.admin.event_management_backend_java_spring.exception.AppException;
 import com.admin.event_management_backend_java_spring.exception.ErrorCode;
+import com.admin.event_management_backend_java_spring.security.model.TokenBlacklist;
+import com.admin.event_management_backend_java_spring.security.repository.TokenBlacklistRepository;
+import com.admin.event_management_backend_java_spring.user.model.User;
 import com.admin.event_management_backend_java_spring.user.payload.request.AuthenticationRequest;
 import com.admin.event_management_backend_java_spring.user.payload.request.IntrospectRequest;
 import com.admin.event_management_backend_java_spring.user.payload.request.LogoutRequest;
 import com.admin.event_management_backend_java_spring.user.payload.response.AuthenticationResponse;
 import com.admin.event_management_backend_java_spring.user.payload.response.IntrospectResponse;
+import com.admin.event_management_backend_java_spring.user.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -41,7 +40,8 @@ import java.util.UUID;
 public class AuthenticationService {
     UserRepository userRepository;
     TokenBlacklistRepository tokenBlacklistRepository;
-    
+    TwoFactorAuthService twoFactorAuthService;
+
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
@@ -65,7 +65,7 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        
+
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
@@ -73,21 +73,32 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.AUTHENTICATION_FAILED);
         }
 
-        // Kiểm tra 2FA
-        if (user.getTwoFactorEnabled() && !user.getTwoFactorVerified()) {
-            // Nếu 2FA được bật nhưng chưa xác thực, trả về response yêu cầu 2FA
+        // Kiểm tra role và logic 2FA
+        boolean requires2FA = shouldRequire2FA(user);
+
+        if (requires2FA) {
+            // Nếu cần 2FA, tự động gửi OTP
+            try {
+                twoFactorAuthService.sendOtp(user.getEmail());
+            } catch (Exception e) {
+                log.error("Failed to send OTP for user: {}", user.getEmail(), e);
+                throw new AppException(ErrorCode.INTERNAL_ERROR);
+            }
+
+            // Trả về response yêu cầu 2FA
             return AuthenticationResponse.builder()
                     .token(null)
                     .authenticated(false)
                     .requires2FA(true)
-                    .message("2FA verification required")
+                    .message("2FA verification required. OTP has been sent to your email.")
                     .build();
         }
 
+        // Nếu không cần 2FA hoặc đã xác thực 2FA, tạo token
         var token = generateToken(user);
         var role = user.getRole();
         var expiresAt = getTokenExpirationTime(token);
-        
+
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
@@ -96,6 +107,34 @@ public class AuthenticationService {
                 .departmentId(user.getDepartment() != null ? user.getDepartment().getId() : null)
                 .expiresAt(expiresAt)
                 .build();
+    }
+
+    // Kiểm tra xem user có cần 2FA không
+    private boolean shouldRequire2FA(User user) {
+        // Admin luôn cần 2FA
+        if (isAdminRole(user.getRole())) {
+            return true;
+        }
+
+        // Student và Organization chỉ cần 2FA nếu đã bật
+        if (isStudentOrOrganizationRole(user.getRole())) {
+            return user.getTwoFactorEnabled() != null && user.getTwoFactorEnabled();
+        }
+
+        // Các role khác không cần 2FA
+        return false;
+    }
+
+    // Kiểm tra xem có phải admin role không
+    private boolean isAdminRole(User.UserRole role) {
+        return role == User.UserRole.ADMIN ||
+               role == User.UserRole.FACULTY_ADMIN;
+    }
+
+    // Kiểm tra xem có phải student hoặc organization role không
+    private boolean isStudentOrOrganizationRole(User.UserRole role) {
+        return role == User.UserRole.STUDENT ||
+               role == User.UserRole.ORGANIZER;
     }
 
     private Date getTokenExpirationTime(String token) {
@@ -114,14 +153,14 @@ public class AuthenticationService {
 
         String jit = signedToken.getJWTClaimsSet().getJWTID();
         Date expiryTime = signedToken.getJWTClaimsSet().getExpirationTime();
-        
+
         TokenBlacklist invalidatedToken = new TokenBlacklist(
-            jit, 
-            signedToken.getJWTClaimsSet().getSubject(), 
-            "LOGOUT", 
+            jit,
+            signedToken.getJWTClaimsSet().getSubject(),
+            "LOGOUT",
             expiryTime.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime()
         );
-        
+
         tokenBlacklistRepository.save(invalidatedToken);
     }
 
@@ -139,7 +178,7 @@ public class AuthenticationService {
 
         if (tokenBlacklistRepository.existsByToken(signedJWT.getJWTClaimsSet().getJWTID()))
             throw new AppException(ErrorCode.TOKEN_INVALID);
-            
+
         return signedJWT;
     }
 
@@ -199,7 +238,7 @@ public class AuthenticationService {
         var token = generateToken(user);
         var role = user.getRole();
         var expiresAt = getTokenExpirationTime(token);
-        
+
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
@@ -209,4 +248,14 @@ public class AuthenticationService {
                 .expiresAt(expiresAt)
                 .build();
     }
-} 
+
+    //auth/status from token
+    public boolean isAuthenticated(String token) {
+        try {
+            verifyToken(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+}

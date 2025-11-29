@@ -22,6 +22,7 @@ public class Feedback {
     @DBRef
     private Event event;
     private String content;
+    private Integer rating; // Rating từ 1-5
     private String response;
     private Date createdAt;
 } 

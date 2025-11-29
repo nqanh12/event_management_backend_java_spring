@@ -21,7 +21,7 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'FACULTY_ADMIN', 'SCHOOL_MANAGER', 'ORGANIZER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY_ADMIN', 'ADMIN', 'ORGANIZER')")
     @Operation(summary = "Tạo sự kiện mới", description = "Tạo mới một sự kiện với các thông tin chi tiết.")
     @PostMapping
     public ResponseEntity<ApiResponse<?>> createEvent(@Valid @RequestBody EventRequest req , @RequestBody String organizerId ) {
@@ -42,7 +42,7 @@ public class EventController {
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'FACULTY_ADMIN', 'SCHOOL_MANAGER', 'ORGANIZER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY_ADMIN', 'ADMIN', 'ORGANIZER')")
     @Operation(summary = "Cập nhật sự kiện", description = "Cập nhật thông tin sự kiện theo ID.")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> updateEvent(
@@ -52,7 +52,7 @@ public class EventController {
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'FACULTY_ADMIN', 'SCHOOL_MANAGER', 'ORGANIZER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY_ADMIN', 'ADMIN', 'ORGANIZER')")
     @PutMapping("/{id}/cancel")
     public ResponseEntity<ApiResponse<EventResponse>> cancelEvent(@PathVariable String id, Authentication authentication) {
         String userId = authentication.getName();

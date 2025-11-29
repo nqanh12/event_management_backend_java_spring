@@ -20,7 +20,7 @@ public class CacheConfig {
         // Configure cache names
         cacheManager.setCacheNames(java.util.Arrays.asList(
             "dashboard", "reports", "analytics", "events", "users", 
-            "departments", "schools", "audit", "user-sessions", 
+            "departments", "audit", "user-sessions", 
             "points", "registrations"
         ));
         

@@ -15,7 +15,7 @@ public class AdminCreateUserRequest {
     private String fullName;
 
     @NotNull(message = "Role is required")
-    private String role; // SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER, SCANNER, STUDENT
+    private String role; // ADMIN, FACULTY_ADMIN, ORGANIZER, SCHOOL_SCANNER, FACULTY_SCANNER, STUDENT
 
     private String departmentId;
     private String studentId; // Mã sinh viên - chỉ cần thiết khi role = STUDENT

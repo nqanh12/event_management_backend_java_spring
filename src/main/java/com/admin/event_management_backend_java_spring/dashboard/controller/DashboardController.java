@@ -1,27 +1,54 @@
 package com.admin.event_management_backend_java_spring.dashboard.controller;
 
+import com.admin.event_management_backend_java_spring.dashboard.payload.request.DashboardFilterRequest;
 import com.admin.event_management_backend_java_spring.payload.ApiResponse;
 import com.admin.event_management_backend_java_spring.payload.response.DashboardResponse;
 import com.admin.event_management_backend_java_spring.dashboard.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 @RestController
 @RequestMapping("/api/dashboard")
-@PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN')")
+@PreAuthorize("hasAnyRole('ADMIN', 'FACULTY_ADMIN')")
 public class DashboardController {
     
     @Autowired
     private DashboardService dashboardService;
     
     /**
-     * Lấy dashboard tổng hợp
+     * Lấy dashboard tổng hợp với bộ lọc theo ngày tháng năm
+     * 
+     * @param startDate Ngày bắt đầu (format: yyyy-MM-dd hoặc yyyy-MM-dd'T'HH:mm:ss)
+     * @param endDate Ngày kết thúc (format: yyyy-MM-dd hoặc yyyy-MM-dd'T'HH:mm:ss)
+     * @param preset Preset option: TODAY, LAST_7_DAYS, LAST_30_DAYS, THIS_WEEK, LAST_WEEK, 
+     *               THIS_MONTH, LAST_MONTH, THIS_QUARTER, LAST_QUARTER, THIS_YEAR, LAST_YEAR, ALL_TIME
+     * 
+     * @example GET /api/dashboard?preset=LAST_30_DAYS
+     * @example GET /api/dashboard?startDate=2024-01-01&endDate=2024-01-31
+     * @example GET /api/dashboard?preset=THIS_MONTH
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<DashboardResponse>> getDashboard() {
-        ApiResponse<DashboardResponse> response = dashboardService.getDashboard();
+    public ResponseEntity<ApiResponse<DashboardResponse>> getDashboard(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+            @RequestParam(required = false) DashboardFilterRequest.DatePreset preset) {
+        
+        DashboardFilterRequest filter = new DashboardFilterRequest();
+        filter.setStartDate(startDate);
+        filter.setEndDate(endDate);
+        filter.setPreset(preset);
+        
+        // Tính toán dates từ preset nếu không có startDate/endDate
+        if (filter.getStartDate() == null || filter.getEndDate() == null) {
+            filter.calculateDatesFromPreset();
+        }
+        
+        ApiResponse<DashboardResponse> response = dashboardService.getDashboard(filter);
         return ResponseEntity.ok(response);
     }
     

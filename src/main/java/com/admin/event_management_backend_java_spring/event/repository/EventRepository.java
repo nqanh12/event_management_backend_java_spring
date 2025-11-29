@@ -43,6 +43,14 @@ public interface EventRepository extends MongoRepository<Event, String> {
     long countByDepartmentId(String departmentId);
     long countByOrganizerId(String organizerId);
     
+    // Count by date range for dashboard filtering
+    @Query(value = "{'startTime': {$gte: ?0, $lte: ?1}}", count = true)
+    long countByStartTimeBetween(Date startDate, Date endDate);
+    
+    // Count by department and date range
+    @Query(value = "{'$or': [{'department.$id': ?0}, {'department': ?0}], 'startTime': {$gte: ?1, $lte: ?2}}", count = true)
+    long countByDepartmentIdAndStartTimeBetween(String departmentId, Date startDate, Date endDate);
+    
     // Top events by participants (for dashboard)
     @Query(value = "{}", sort = "{'maxParticipants': -1}")
     List<Event> findTopEventsByParticipants(Pageable pageable);

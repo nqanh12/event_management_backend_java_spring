@@ -23,6 +23,7 @@ import com.admin.event_management_backend_java_spring.exception.AppException;
 import com.admin.event_management_backend_java_spring.exception.ErrorCode;
 import com.admin.event_management_backend_java_spring.academic.model.Semester;
 import com.admin.event_management_backend_java_spring.academic.service.AcademicCalendarService;
+import com.admin.event_management_backend_java_spring.audit.service.AuditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.Async;
@@ -50,6 +51,8 @@ public class PointsService {
     private PointsHistoryRepository pointsHistoryRepository;
     @Autowired
     private AcademicCalendarService academicCalendarService;
+    @Autowired
+    private AuditService auditService;
 
     /**
      * Tự động cập nhật điểm cho tất cả sự kiện đã kết thúc
@@ -432,17 +435,37 @@ public class PointsService {
                     case PENALIZE:
                         // Trừ điểm
                         pointsToProcess = req.getCustomPoints() != null ? req.getCustomPoints() : calculatePenaltyPoints(event);
+                        LocalDateTime now = java.time.LocalDateTime.now();
+                        String reason = req.getReason() != null ? req.getReason() : "Trừ điểm do không tham gia đầy đủ sự kiện";
+                        String description = req.getDescription();
 
                         if (event.getType() == Event.EventType.TRAINING) {
                             // Trừ điểm rèn luyện từ kỳ học hiện tại
                             Semester currentSemester = academicCalendarService.calculateCurrentSemester(user);
-                            Double currentPoints = getTrainingPointsBySemester(user, currentSemester);
-                            Double newPoints = Math.max(0, currentPoints - pointsToProcess);
+                            Double oldPoints = getTrainingPointsBySemester(user, currentSemester);
+                            Double newPoints = Math.max(0, oldPoints - pointsToProcess);
                             updateTrainingPointsBySemester(user, currentSemester, newPoints);
+                            
+                            // Lưu lịch sử
+                            PointsHistory history = new PointsHistory(
+                                null, user.getId(), user.getEmail(), user.getFullName(),
+                                PointsHistory.PointsType.TRAINING_POINTS, null, currentSemester,
+                                oldPoints, newPoints, newPoints - oldPoints, null, null, reason, description, adminId, now, event.getId(), event.getName()
+                            );
+                            pointsHistoryRepository.save(history);
                         } else if (event.getType() == Event.EventType.SOCIAL) {
                             // Trừ điểm hoạt động xã hội
-                            Double newPoints = Math.max(0, user.getSocialPoints() - pointsToProcess);
+                            Double oldPoints = user.getSocialPoints();
+                            Double newPoints = Math.max(0, oldPoints - pointsToProcess);
                             user.setSocialPoints(newPoints);
+                            
+                            // Lưu lịch sử
+                            PointsHistory history = new PointsHistory(
+                                null, user.getId(), user.getEmail(), user.getFullName(),
+                                PointsHistory.PointsType.SOCIAL_POINTS, null, null,
+                                oldPoints, newPoints, newPoints - oldPoints, null, null, reason, description, adminId, now, event.getId(), event.getName()
+                            );
+                            pointsHistoryRepository.save(history);
                         }
 
                         reg.setPointsAwarded(-pointsToProcess);
@@ -458,6 +481,10 @@ public class PointsService {
                         reg.setPointsAwarded(0);
                         newStatus = Registration.PointsProcessingStatus.MANUAL_IGNORED;
                         break;
+                        
+                    default:
+                        // Không có action hợp lệ, bỏ qua registration này
+                        continue;
                 }
 
                 reg.setPointsProcessingStatus(newStatus);
@@ -510,7 +537,7 @@ public class PointsService {
      * Lấy danh sách registrations cần xử lý thủ công
      */
     public ApiResponse<List<Registration>> getPendingManualProcessing(String eventId) {
-        Event event = eventRepository.findById(eventId)
+        eventRepository.findById(eventId)
             .orElseThrow(() -> new AppException(ErrorCode.EVENT_NOT_FOUND, "Event not found"));
 
         List<Registration> pendingRegistrations = registrationRepository.findAll().stream()
@@ -665,8 +692,8 @@ public class PointsService {
             updateTrainingPointsBySemester(user, semester, newPoints);
             PointsHistory history = new PointsHistory(
                     null, user.getId(), user.getEmail(), user.getFullName(),
-                    PointsHistory.PointsType.TRAINING_POINTS, semester,
-                    oldPoints, newPoints, newPoints - oldPoints, reason, description, "ADMIN", now, null, null
+                    PointsHistory.PointsType.TRAINING_POINTS, null, semester,
+                    oldPoints, newPoints, newPoints - oldPoints, null, null, reason, description, "ADMIN", now, null, null
             );
             pointsHistoryRepository.save(history);
             updated = true;
@@ -678,8 +705,8 @@ public class PointsService {
             user.setSocialPoints(newPoints);
             PointsHistory history = new PointsHistory(
                     null, user.getId(), user.getEmail(), user.getFullName(),
-                    PointsHistory.PointsType.SOCIAL_POINTS, null,
-                    oldPoints, newPoints, newPoints - oldPoints, reason, description, "ADMIN", now, null, null
+                    PointsHistory.PointsType.SOCIAL_POINTS, null, null,
+                    oldPoints, newPoints, newPoints - oldPoints, null, null, reason, description, "ADMIN", now, null, null
             );
             pointsHistoryRepository.save(history);
             updated = true;
@@ -722,8 +749,8 @@ public class PointsService {
                     updateTrainingPointsBySemester(user, currentSemester, newPoints);
                     PointsHistory history = new PointsHistory(
                             null, user.getId(), user.getEmail(), user.getFullName(),
-                            PointsHistory.PointsType.TRAINING_POINTS, currentSemester,
-                            oldPoints, newPoints, req.getTrainingPointsToAdd().doubleValue(), req.getReason(), null, "ADMIN", now, null, null
+                            PointsHistory.PointsType.TRAINING_POINTS, null, currentSemester,
+                            oldPoints, newPoints, req.getTrainingPointsToAdd().doubleValue(), null, null, req.getReason(), null, "ADMIN", now, null, null
                     );
                     pointsHistoryRepository.save(history);
                     totalPointsAwarded += req.getTrainingPointsToAdd();
@@ -735,8 +762,8 @@ public class PointsService {
                     user.setSocialPoints(newPoints);
                     PointsHistory history = new PointsHistory(
                             null, user.getId(), user.getEmail(), user.getFullName(),
-                            PointsHistory.PointsType.SOCIAL_POINTS, null,
-                            oldPoints, newPoints, req.getSocialPointsToAdd().doubleValue(), req.getReason(), null, "ADMIN", now, null, null
+                            PointsHistory.PointsType.SOCIAL_POINTS, null, null,
+                            oldPoints, newPoints, req.getSocialPointsToAdd().doubleValue(), null, null, req.getReason(), null, "ADMIN", now, null, null
                     );
                     pointsHistoryRepository.save(history);
                     totalPointsAwarded += req.getSocialPointsToAdd();
@@ -754,6 +781,28 @@ public class PointsService {
         result.setFailDetails(failDetails);
         result.setTotalPointsAwarded(totalPointsAwarded);
         result.setEventName(null);
+        
+        // Ghi log Audit cho bulk update
+        auditService.logActivity(
+            "POINTS_BULK_UPDATE",
+            "POINTS",
+            null, // Không có resourceId cụ thể vì là bulk operation
+            String.format("Cập nhật điểm hàng loạt: %d thành công, %d thất bại, tổng điểm: %d", 
+                successCount, failCount, totalPointsAwarded),
+            null,
+            Map.of(
+                "successCount", successCount,
+                "failCount", failCount,
+                "totalPointsAwarded", totalPointsAwarded,
+                "userIds", req.getUserIds(),
+                "trainingPointsToAdd", req.getTrainingPointsToAdd() != null ? req.getTrainingPointsToAdd() : 0,
+                "socialPointsToAdd", req.getSocialPointsToAdd() != null ? req.getSocialPointsToAdd() : 0,
+                "reason", req.getReason() != null ? req.getReason() : ""
+            ),
+            failCount == 0 ? "SUCCESS" : "PARTIAL_SUCCESS",
+            failCount > 0 ? String.join("; ", failDetails) : null
+        );
+        
         return new ApiResponse<>(failCount == 0, failCount == 0 ? "Cập nhật điểm hàng loạt thành công" : "Có lỗi khi cập nhật điểm cho một số user", result);
     }
 
@@ -859,8 +908,8 @@ public class PointsService {
         // Lưu lịch sử
         PointsHistory history = new PointsHistory(
             null, user.getId(), user.getEmail(), user.getFullName(),
-            PointsHistory.PointsType.TRAINING_POINTS, semester,
-            currentPoints, newPoints, newPoints - currentPoints, reason, "Tự động cộng điểm từ sự kiện", "SYSTEM", java.time.LocalDateTime.now(), eventId, eventName
+            PointsHistory.PointsType.TRAINING_POINTS, null, semester,
+            currentPoints, newPoints, newPoints - currentPoints, null, null, reason, "Tự động cộng điểm từ sự kiện", "SYSTEM", java.time.LocalDateTime.now(), eventId, eventName
         );
         pointsHistoryRepository.save(history);
     }
@@ -877,8 +926,8 @@ public class PointsService {
         // Lưu lịch sử
         PointsHistory history = new PointsHistory(
             null, user.getId(), user.getEmail(), user.getFullName(),
-            PointsHistory.PointsType.SOCIAL_POINTS, null,
-            currentPoints, newPoints, newPoints - currentPoints, reason, "Tự động cộng điểm từ sự kiện", "SYSTEM", java.time.LocalDateTime.now(), eventId, eventName
+            PointsHistory.PointsType.SOCIAL_POINTS, null, null,
+            currentPoints, newPoints, newPoints - currentPoints, null, null, reason, "Tự động cộng điểm từ sự kiện", "SYSTEM", java.time.LocalDateTime.now(), eventId, eventName
         );
         pointsHistoryRepository.save(history);
     }
@@ -897,11 +946,35 @@ public class PointsService {
         updateTrainingPointsBySemester(user, request.getSemester(), newPoints);
         PointsHistory history = new PointsHistory(
                 null, user.getId(), user.getEmail(), user.getFullName(),
-                PointsHistory.PointsType.TRAINING_POINTS, request.getSemester(),
-                oldPoints, newPoints, newPoints - oldPoints, request.getReason(), request.getDescription(), adminId, java.time.LocalDateTime.now(), null, null
+                PointsHistory.PointsType.TRAINING_POINTS, null, request.getSemester(),
+                oldPoints, newPoints, newPoints - oldPoints, null, null, request.getReason(), request.getDescription(), adminId, java.time.LocalDateTime.now(), null, null
         );
         pointsHistoryRepository.save(history);
         userRepository.save(user);
+        
+        // Ghi log Audit
+        auditService.logActivity(
+            "POINTS_MANUAL_UPDATE",
+            "POINTS",
+            user.getId(),
+            "Cập nhật điểm rèn luyện thủ công cho user: " + user.getEmail() + " - Kỳ: " + request.getSemester().getDisplayName(),
+            Map.of(
+                "oldPoints", oldPoints,
+                "semester", request.getSemester().getDisplayName(),
+                "pointsType", "TRAINING_POINTS"
+            ),
+            Map.of(
+                "newPoints", newPoints,
+                "pointsChanged", newPoints - oldPoints,
+                "semester", request.getSemester().getDisplayName(),
+                "pointsType", "TRAINING_POINTS",
+                "reason", request.getReason() != null ? request.getReason() : "",
+                "description", request.getDescription() != null ? request.getDescription() : ""
+            ),
+            "SUCCESS",
+            null
+        );
+        
         return new ApiResponse<>(true, "Cập nhật điểm rèn luyện thành công", getUserPointsResponse(user));
     }
 
@@ -916,11 +989,33 @@ public class PointsService {
         user.setSocialPoints(newPoints);
         PointsHistory history = new PointsHistory(
                 null, user.getId(), user.getEmail(), user.getFullName(),
-                PointsHistory.PointsType.SOCIAL_POINTS, null,
-                oldPoints, newPoints, newPoints - oldPoints, request.getReason(), request.getDescription(), adminId, java.time.LocalDateTime.now(), null, null
+                PointsHistory.PointsType.SOCIAL_POINTS, null, null,
+                oldPoints, newPoints, newPoints - oldPoints, null, null, request.getReason(), request.getDescription(), adminId, java.time.LocalDateTime.now(), null, null
         );
         pointsHistoryRepository.save(history);
         userRepository.save(user);
+        
+        // Ghi log Audit
+        auditService.logActivity(
+            "POINTS_MANUAL_UPDATE",
+            "POINTS",
+            user.getId(),
+            "Cập nhật điểm hoạt động xã hội thủ công cho user: " + user.getEmail(),
+            Map.of(
+                "oldPoints", oldPoints,
+                "pointsType", "SOCIAL_POINTS"
+            ),
+            Map.of(
+                "newPoints", newPoints,
+                "pointsChanged", newPoints - oldPoints,
+                "pointsType", "SOCIAL_POINTS",
+                "reason", request.getReason() != null ? request.getReason() : "",
+                "description", request.getDescription() != null ? request.getDescription() : ""
+            ),
+            "SUCCESS",
+            null
+        );
+        
         return new ApiResponse<>(true, "Cập nhật điểm hoạt động xã hội thành công", getUserPointsResponse(user));
     }
 }

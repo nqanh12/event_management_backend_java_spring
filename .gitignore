@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Logs ###
+logs/
+*.log
+
 ### STS ###
 .apt_generated
 .classpath
@@ -31,3 +35,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Application specific ###
+api_endpoints.txt
+*.md
+!README.md

@@ -22,7 +22,7 @@ public class RegistrationController {
     @Autowired
     private RegistrationService registrationService;
 
-    @PreAuthorize("hasAnyRole('STUDENT', 'GUEST')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'STUDENT')")
     @Operation(summary = "Đăng ký sự kiện", description = "Đăng ký tham gia sự kiện cho người dùng hiện tại.")
     @PostMapping
     public ResponseEntity<ApiResponse<RegistrationResponse>> registerEvent(@Valid @RequestBody RegistrationRequest req, Authentication authentication) {
@@ -53,7 +53,7 @@ public class RegistrationController {
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
-    @PreAuthorize("hasAnyRole('STUDENT', 'GUEST')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'STUDENT')")
     @PutMapping("/{eventId}/cancel")
     public ResponseEntity<ApiResponse<RegistrationResponse>> cancelRegistration(@PathVariable String eventId, Authentication authentication) {
         String userId = authentication.getName();
@@ -61,7 +61,7 @@ public class RegistrationController {
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
-    @PreAuthorize("hasAnyRole('STUDENT', 'GUEST')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'STUDENT')")
     @GetMapping("/my-registrations")
     public ResponseEntity<ApiResponse<List<RegistrationResponse>>> getMyRegistrations(Authentication authentication) {
         String userId = authentication.getName();
@@ -69,7 +69,7 @@ public class RegistrationController {
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
-    @PreAuthorize("hasAnyRole('STUDENT', 'GUEST')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'STUDENT')")
     @GetMapping("/my-registrations/{status}")
     public ResponseEntity<ApiResponse<List<RegistrationResponse>>> getMyRegistrationsByStatus(
             @PathVariable String status, Authentication authentication) {

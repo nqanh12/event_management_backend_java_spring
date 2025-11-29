@@ -1,6 +1,7 @@
 package com.admin.event_management_backend_java_spring.points.model;
 
 import com.admin.event_management_backend_java_spring.academic.model.Semester;
+import com.admin.event_management_backend_java_spring.training.model.TrainingCriteria;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,9 @@ public class PointsHistory {
 
     // Loại điểm thay đổi
     private PointsType pointsType;
+    
+    // Tiêu chí đánh giá (TC1-TC5)
+    private TrainingCriteria trainingCriteria;
 
     // Kỳ học (chỉ áp dụng cho Training Points)
     private Semester semester;
@@ -34,6 +38,10 @@ public class PointsHistory {
     private Double oldPoints;
     private Double newPoints;
     private Double pointsChange;
+    
+    // Loại vi phạm (nếu là trừ điểm)
+    private ViolationType violationType;
+    private String violationDetails;
 
     // Thông tin thay đổi
     private String reason;

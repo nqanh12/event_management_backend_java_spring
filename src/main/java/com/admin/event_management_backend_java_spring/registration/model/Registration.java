@@ -2,7 +2,6 @@ package com.admin.event_management_backend_java_spring.registration.model;
 
 import com.admin.event_management_backend_java_spring.event.model.Event;
 import com.admin.event_management_backend_java_spring.user.model.User;
-import com.admin.event_management_backend_java_spring.school.model.School;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -35,10 +34,6 @@ public class Registration {
     private String pointsProcessingReason;
     private String processedBy;
     private Date processedAt;
-    
-    // Multi-tenancy support
-    @DBRef
-    private School school;
 
     private String createdBy;
     private Date createdAt;

@@ -1,32 +1,29 @@
 package com.admin.event_management_backend_java_spring.user.controller;
 
-import com.admin.event_management_backend_java_spring.user.payload.request.AuthenticationRequest;
-import com.admin.event_management_backend_java_spring.user.payload.request.IntrospectRequest;
-import com.admin.event_management_backend_java_spring.user.payload.request.LogoutRequest;
-import com.admin.event_management_backend_java_spring.user.payload.request.SendOtpRequest;
-import com.admin.event_management_backend_java_spring.user.payload.request.VerifyOtpRequest;
+import com.admin.event_management_backend_java_spring.user.payload.request.*;
 import com.admin.event_management_backend_java_spring.user.payload.response.AuthenticationResponse;
 import com.admin.event_management_backend_java_spring.user.payload.response.IntrospectResponse;
 import com.admin.event_management_backend_java_spring.user.service.AuthenticationService;
 import com.admin.event_management_backend_java_spring.user.service.TwoFactorAuthService;
+import com.admin.event_management_backend_java_spring.user.service.UserService;
 import com.admin.event_management_backend_java_spring.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.nimbusds.jose.JOSEException;
-
-import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final TwoFactorAuthService twoFactorAuthService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthenticationResponse>> login(@RequestBody AuthenticationRequest request) {
@@ -113,4 +110,47 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().body(ApiResponse.error("Failed to disable 2FA: " + e.getMessage()));
         }
     }
-} 
+
+    @GetMapping("/2fa-status/{email}")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> get2FAStatus(@PathVariable String email) {
+        try {
+            var userOptional = userService.findByEmail(email);
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.badRequest().body(ApiResponse.error("User not found"));
+            }
+
+            var user = userOptional.get();
+
+            Map<String, Object> status = new HashMap<>();
+            status.put("email", user.getEmail());
+            status.put("role", user.getRole());
+            status.put("twoFactorEnabled", user.getTwoFactorEnabled());
+            status.put("twoFactorVerified", user.getTwoFactorVerified());
+
+            // Kiểm tra xem có phải admin không
+            boolean isAdmin = user.getRole() == com.admin.event_management_backend_java_spring.user.model.User.UserRole.ADMIN ||
+                            user.getRole() == com.admin.event_management_backend_java_spring.user.model.User.UserRole.FACULTY_ADMIN;
+
+            status.put("isAdmin", isAdmin);
+            status.put("canToggle2FA", !isAdmin); // Chỉ non-admin mới có thể bật/tắt 2FA
+
+            return ResponseEntity.ok(ApiResponse.success(status, "2FA status retrieved successfully"));
+        } catch (Exception e) {
+            log.error("Failed to get 2FA status", e);
+            return ResponseEntity.badRequest().body(ApiResponse.error("Failed to get 2FA status: " + e.getMessage()));
+        }
+    }
+
+
+    @GetMapping("/status")
+    public ResponseEntity<ApiResponse<Boolean>> getAuthenticationStatus(@RequestBody String bearerToken) {
+        try {
+            boolean isAuthenticated = authenticationService.isAuthenticated(bearerToken);
+            return ResponseEntity.ok(ApiResponse.success(isAuthenticated, "Authentication status retrieved successfully"));
+        } catch (Exception e) {
+            log.error("Failed to get authentication status", e);
+            return ResponseEntity.badRequest().body(ApiResponse.error("Failed to get authentication status: " + e.getMessage()));
+        }
+    }
+
+}

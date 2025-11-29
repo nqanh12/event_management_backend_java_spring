@@ -22,7 +22,6 @@ public enum ErrorCode {
     BAD_REQUEST(1010, "Bad request", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(1011, "Invalid or expired token", HttpStatus.BAD_REQUEST),
     INVALID_INPUT(1012, "Invalid input", HttpStatus.BAD_REQUEST),
-    SCHOOL_NOT_FOUND(1013, "School not found", HttpStatus.NOT_FOUND),
     STUDENT_ID_EXISTS(1014, "Student ID already exists", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED(1015, "Unauthorized access", HttpStatus.UNAUTHORIZED),
     AUTHENTICATION_FAILED(1016, "Authentication failed", HttpStatus.UNAUTHORIZED),

@@ -8,7 +8,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 import com.admin.event_management_backend_java_spring.user.payload.response.UserResponse;
-import com.admin.event_management_backend_java_spring.user.payload.request.UpdateProfileRequest;
 import com.admin.event_management_backend_java_spring.user.payload.request.ChangePasswordRequest;
 import com.admin.event_management_backend_java_spring.payload.ApiResponse;
 import com.admin.event_management_backend_java_spring.department.model.Department;
@@ -24,8 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.util.ArrayList;
 import com.admin.event_management_backend_java_spring.user.payload.request.ForgotPasswordRequest;
-import com.admin.event_management_backend_java_spring.user.payload.request.ResetPasswordRequest;
-import com.admin.event_management_backend_java_spring.user.payload.request.UpdatePointsRequest;
 import com.admin.event_management_backend_java_spring.user.payload.request.UpdatePointsRequest;
 
 import java.util.UUID;
@@ -212,11 +209,11 @@ public class UserService {
         }
 
         // Cập nhật danh sách role được phép tạo
-        if (role != User.UserRole.SCHOOL_MANAGER && role != User.UserRole.FACULTY_ADMIN &&
+        if (role != User.UserRole.ADMIN && role != User.UserRole.FACULTY_ADMIN &&
             role != User.UserRole.ORGANIZER && role != User.UserRole.FACULTY_SCANNER &&
             role != User.UserRole.SCHOOL_SCANNER && role != User.UserRole.STUDENT) {
             throw new AppException(ErrorCode.PERMISSION_DENIED,
-                "Only allowed roles: SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER, FACULTY_SCANNER, SCHOOL_SCANNER, STUDENT");
+                "Only allowed roles: ADMIN, FACULTY_ADMIN, ORGANIZER, FACULTY_SCANNER, SCHOOL_SCANNER, STUDENT");
         }
 
         Department department = null;
@@ -259,14 +256,8 @@ public class UserService {
             // Điểm công tác xã hội mặc định là 0
             user.setSocialPoints(0.0);
 
-            // Điểm rèn luyện mặc định lấy từ trường (school)
-            Integer defaultTrainingPoints = null;
-            if (department != null && department.getSchool() != null) {
-                defaultTrainingPoints = department.getSchool().getDefaultTrainingPoints();
-            }
-            if (defaultTrainingPoints == null) {
-                defaultTrainingPoints = 0; // fallback nếu không có cấu hình
-            }
+            // Điểm rèn luyện mặc định (giá trị mặc định cho hệ thống 1 trường)
+            Integer defaultTrainingPoints = 4; // Giá trị mặc định
             // Gán cho kỳ 1, các kỳ khác để 0
             user.setTrainingPoints1(defaultTrainingPoints.doubleValue());
             user.setTrainingPoints2(0.0);

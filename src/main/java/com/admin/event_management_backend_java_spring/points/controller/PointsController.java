@@ -28,7 +28,7 @@ public class PointsController {
     @Autowired
     private PointsService pointsService;
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'FACULTY_ADMIN', 'SCHOOL_MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY_ADMIN', 'ADMIN')")
     @PostMapping("/events/{eventId}/manual-update")
     public ResponseEntity<ApiResponse<BulkUpdatePointsResult>> manualUpdatePointsForEvent(
             @PathVariable String eventId,
@@ -38,14 +38,14 @@ public class PointsController {
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'FACULTY_ADMIN', 'SCHOOL_MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY_ADMIN', 'ADMIN')")
     @GetMapping("/events/{eventId}/report")
     public ResponseEntity<ApiResponse<EventPointsReportResponse>> getEventPointsReport(@PathVariable String eventId) {
         ApiResponse<EventPointsReportResponse> response = pointsService.getEventPointsReport(eventId);
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'FACULTY_ADMIN', 'SCHOOL_MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY_ADMIN', 'ADMIN')")
     @PostMapping("/events/{eventId}/manual-process")
     public ResponseEntity<ApiResponse<ManualPointsProcessingResult>> manualProcessPoints(
             @PathVariable String eventId,
@@ -56,14 +56,14 @@ public class PointsController {
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'FACULTY_ADMIN', 'SCHOOL_MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY_ADMIN', 'ADMIN')")
     @GetMapping("/events/{eventId}/pending")
     public ResponseEntity<ApiResponse<?>> getPendingManualProcessing(@PathVariable String eventId) {
         ApiResponse<?> response = pointsService.getPendingManualProcessing(eventId);
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'FACULTY_ADMIN', 'SCHOOL_MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY_ADMIN', 'ADMIN')")
     @GetMapping("/dashboard")
     public ResponseEntity<ApiResponse<PointsProcessingDashboardResponse>> getPointsProcessingDashboard() {
         ApiResponse<PointsProcessingDashboardResponse> response = pointsService.getPointsProcessingDashboard();
@@ -74,7 +74,7 @@ public class PointsController {
      * Cập nhật điểm rèn luyện cho kỳ học cụ thể
      */
     @PutMapping("/training")
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN')")
     public ResponseEntity<ApiResponse<UserPointsResponse>> updateTrainingPoints(
             @Valid @RequestBody UpdatePointsRequest request,
             @RequestParam String adminId) {
@@ -87,7 +87,7 @@ public class PointsController {
      * Cập nhật điểm hoạt động xã hội
      */
     @PutMapping("/social")
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN')")
     public ResponseEntity<ApiResponse<UserPointsResponse>> updateSocialPoints(
             @Valid @RequestBody UpdatePointsRequest request,
             @RequestParam String adminId) {
@@ -100,7 +100,7 @@ public class PointsController {
      * Lấy thông tin điểm của user
      */
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN', 'ORGANIZER') or #userId == authentication.principal.id")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN', 'ORGANIZER') or #userId == authentication.principal.id")
     public ResponseEntity<ApiResponse<UserPointsResponse>> getUserPoints(@PathVariable String userId) {
 
         ApiResponse<UserPointsResponse> response = pointsService.getUserPoints(userId);
@@ -111,7 +111,7 @@ public class PointsController {
      * Lấy lịch sử điểm của user
      */
     @GetMapping("/user/{userId}/history")
-    @PreAuthorize("hasAnyRole('GLOBAL_ADMIN', 'SCHOOL_MANAGER', 'FACULTY_ADMIN', 'ORGANIZER') or #userId == authentication.principal.id")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMIN', 'FACULTY_ADMIN', 'ORGANIZER') or #userId == authentication.principal.id")
     public ResponseEntity<ApiResponse<List<PointsHistory>>> getUserPointsHistory(@PathVariable String userId) {
 
         ApiResponse<List<PointsHistory>> response = pointsService.getUserPointsHistory(userId);

@@ -95,7 +95,12 @@ public class User {
     private Date deletedAt;
 
     public enum UserRole {
-            GLOBAL_ADMIN, SCHOOL_MANAGER, FACULTY_ADMIN, ORGANIZER, STUDENT, GUEST, FACULTY_SCANNER, SCHOOL_SCANNER
+            ADMIN,           // Quản trường (thay cho GLOBAL_ADMIN, SCHOOL_MANAGER)
+            FACULTY_ADMIN,   // Quản lý khoa
+            ORGANIZER,       // Người tổ chức sự kiện
+            STUDENT,         // Sinh viên
+            SCHOOL_SCANNER,  // Scanner cho trường
+            FACULTY_SCANNER  // Scanner cho khoa
     }
 
     // Helper method để tính academic year từ cohort

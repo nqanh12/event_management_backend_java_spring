@@ -9,6 +9,7 @@ public class FeedbackResponse {
     private String userName;
     private String eventName;
     private String content;
+    private Integer rating;
     private String response;
     private Date createdAt;
 }

@@ -5,6 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký thành công - {{event_name}}</title>
     <style>
+        /* CSS Variables for Design System */
+        :root {
+            --primary-color: #667eea;
+            --primary-dark: #5a6fd8;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #4CAF50;
+            --warning-color: #FF9800;
+            --error-color: #f44336;
+            --info-color: #2196F3;
+            --white: #ffffff;
+            --gray-50: #f8f9fa;
+            --gray-100: #f1f3f4;
+            --gray-200: #e8eaed;
+            --gray-300: #dadce0;
+            --gray-400: #bdc1c6;
+            --gray-500: #9aa0a6;
+            --gray-600: #80868b;
+            --gray-700: #5f6368;
+            --gray-800: #3c4043;
+            --gray-900: #202124;
+            --black: #000000;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 20px;
+            --font-size-2xl: 24px;
+            --font-size-3xl: 28px;
+            --font-size-4xl: 32px;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 24px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --white: #1a1a1a;
+                --gray-50: #2d2d2d;
+                --gray-100: #3d3d3d;
+                --gray-200: #4d4d4d;
+                --gray-300: #5d5d5d;
+                --gray-400: #6d6d6d;
+                --gray-500: #7d7d7d;
+                --gray-600: #8d8d8d;
+                --gray-700: #9d9d9d;
+                --gray-800: #adadad;
+                --gray-900: #cdcdcd;
+                --black: #ffffff;
+            }
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,244 +81,426 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--font-family);
             line-height: 1.6;
-            color: #333;
-            background-color: #f4f4f4;
+            color: var(--gray-900);
+            background-color: var(--gray-50);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         .email-container {
             max-width: 600px;
             margin: 0 auto;
-            background-color: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: var(--white);
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
         }
         
         .header {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--success-color) 0%, #45a049 100%);
+            color: var(--white);
+            padding: var(--spacing-2xl) var(--spacing-xl);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
         }
         
         .header h1 {
-            font-size: 28px;
+            font-size: var(--font-size-3xl);
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: var(--spacing-md);
+            line-height: 1.2;
         }
         
         .header p {
-            font-size: 16px;
+            font-size: var(--font-size-base);
             opacity: 0.9;
         }
         
         .content {
-            padding: 40px 30px;
+            padding: var(--spacing-2xl) var(--spacing-xl);
         }
         
-        .success-card {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 20px 0;
+        .success-summary {
+            background: linear-gradient(135deg, var(--success-color) 0%, #45a049 100%);
+            color: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            margin: var(--spacing-lg) 0;
             text-align: center;
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            position: relative;
+            overflow: hidden;
         }
         
-        .success-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
+        .success-summary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
         }
         
-        .success-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
+        .success-summary h3 {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--spacing-md);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .success-summary p {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
         
         .registration-details {
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            padding: 25px;
-            margin: 20px 0;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) 0;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
         }
         
         .registration-details h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 20px;
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        
+        .detail-item {
+            background: var(--gray-50);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
             text-align: center;
         }
         
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .detail-row:last-child {
-            border-bottom: none;
+        .detail-icon {
+            font-size: var(--font-size-2xl);
+            margin-bottom: var(--spacing-sm);
+            display: block;
         }
         
         .detail-label {
-            font-weight: 600;
-            color: #555;
-        }
-        
-        .detail-value {
-            color: #2c3e50;
+            font-size: var(--font-size-sm);
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-xs);
             font-weight: 500;
         }
         
-        .qr-section {
+        .detail-value {
+            font-size: var(--font-size-base);
+            color: var(--gray-800);
+            font-weight: 600;
+        }
+        
+        .qr-code-section {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) 0;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
             text-align: center;
-            margin: 30px 0;
+        }
+        
+        .qr-code-section h3 {
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .qr-code-container {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            display: inline-block;
+            margin: var(--spacing-md) 0;
         }
         
         .qr-code {
-            background: #f8f9fa;
-            border: 2px dashed #28a745;
-            border-radius: 10px;
-            padding: 20px;
-            display: inline-block;
-            margin: 15px 0;
+            width: 200px;
+            height: 200px;
+            background: var(--gray-100);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-4xl);
+            margin: 0 auto;
         }
         
-        .qr-code img {
-            width: 150px;
-            height: 150px;
+        .qr-instructions {
+            background-color: rgba(33, 150, 243, 0.05);
+            border-left: 4px solid var(--info-color);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
         }
         
-        .qr-text {
-            color: #28a745;
+        .qr-instructions h4 {
+            color: var(--info-color);
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-lg);
             font-weight: 600;
-            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
         }
         
-        .info-box {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border: 1px solid #ffc107;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        
-        .info-box h4 {
-            color: #856404;
-            margin-bottom: 10px;
-            font-size: 18px;
-        }
-        
-        .info-box ul {
+        .qr-instructions ul {
             list-style: none;
             padding-left: 0;
         }
         
-        .info-box li {
-            padding: 5px 0;
-            color: #856404;
+        .qr-instructions li {
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-base);
+            color: var(--gray-700);
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
         }
         
-        .info-box li::before {
-            content: "⚠️";
-            margin-right: 10px;
+        .qr-instructions li::before {
+            content: '📱';
+            font-size: var(--font-size-sm);
+            margin-top: 2px;
+        }
+        
+        .event-reminders {
+            background-color: rgba(255, 152, 0, 0.05);
+            border-left: 4px solid var(--warning-color);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+        
+        .event-reminders h4 {
+            color: var(--warning-color);
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .reminder-item {
+            background: var(--white);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin: var(--spacing-sm) 0;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .reminder-time {
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .reminder-text {
+            color: var(--gray-700);
+            font-size: var(--font-size-sm);
+        }
+        
+        .cancellation-options {
+            background-color: rgba(244, 67, 54, 0.05);
+            border-left: 4px solid var(--error-color);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+        
+        .cancellation-options h4 {
+            color: var(--error-color);
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .cancellation-options p {
+            color: var(--gray-700);
+            font-size: var(--font-size-base);
+            margin-bottom: var(--spacing-sm);
         }
         
         .action-buttons {
-            margin: 30px 0;
-            text-align: center;
+            display: flex;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         
-        .btn {
+        .button {
             display: inline-block;
-            padding: 12px 30px;
-            margin: 0 10px;
+            padding: var(--spacing-md) var(--spacing-xl);
             text-decoration: none;
-            border-radius: 25px;
+            border-radius: var(--radius-2xl);
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all var(--transition-normal);
+            text-align: center;
+            min-width: 120px;
+            position: relative;
+            overflow: hidden;
         }
         
-        .btn-primary {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left var(--transition-normal);
         }
         
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
+        .button:hover::before {
+            left: 100%;
         }
         
-        .btn:hover {
+        .button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .button.primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+        }
+        
+        .button.secondary {
+            background: var(--gray-200);
+            color: var(--gray-800);
+        }
+        
+        .button.error {
+            background: linear-gradient(135deg, var(--error-color) 0%, #d32f2f 100%);
+            color: var(--white);
         }
         
         .footer {
-            background-color: #2c3e50;
-            color: white;
-            padding: 30px 20px;
+            background-color: var(--gray-800);
+            color: var(--white);
+            padding: var(--spacing-xl);
             text-align: center;
         }
         
         .footer p {
-            margin-bottom: 10px;
-            font-size: 14px;
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            opacity: 0.8;
         }
         
-        .social-links {
-            margin-top: 20px;
-        }
-        
-        .social-links a {
-            color: white;
-            margin: 0 10px;
-            text-decoration: none;
-            font-size: 18px;
-        }
-        
-        .logo {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .ticket-number {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 18px;
-            font-weight: bold;
-            margin: 15px 0;
-            display: inline-block;
-        }
-        
+        /* Responsive Design */
         @media (max-width: 600px) {
             .content {
-                padding: 20px 15px;
+                padding: var(--spacing-lg) var(--spacing-md);
             }
             
             .header {
-                padding: 20px 15px;
+                padding: var(--spacing-lg) var(--spacing-md);
             }
             
-            .detail-row {
+            .header h1 {
+                font-size: var(--font-size-2xl);
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
                 flex-direction: column;
-                align-items: flex-start;
             }
             
-            .detail-value {
-                margin-top: 5px;
+            .button {
+                width: 100%;
             }
             
-            .btn {
-                display: block;
-                margin: 10px 0;
+            .qr-code {
+                width: 150px;
+                height: 150px;
+            }
+        }
+        
+        /* Accessibility Improvements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --primary-color: #000080;
+                --secondary-color: #800080;
+                --gray-700: #000000;
+                --gray-900: #000000;
             }
         }
     </style>
@@ -257,92 +508,103 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <div class="logo">🎉 EventHub</div>
-            <h1>Đăng ký thành công!</h1>
-            <p>Chúc mừng! Bạn đã đăng ký tham gia sự kiện thành công</p>
+            <div class="header-content">
+                <div class="logo">✅ EventHub</div>
+                <h1>Đăng ký thành công!</h1>
+                <p>Chúc mừng! Bạn đã đăng ký thành công sự kiện</p>
+            </div>
         </div>
         
         <div class="content">
-            <div class="success-card">
-                <div class="success-icon">✅</div>
-                <div class="success-title">Đăng ký hoàn tất!</div>
-                <p>Bạn đã được xác nhận tham gia sự kiện</p>
-                <div class="ticket-number">Mã vé: {{ticket_number}}</div>
+            <div class="success-summary">
+                <h3>🎉 Đăng ký thành công</h3>
+                <p>Chúc mừng! Bạn đã đăng ký thành công sự kiện <strong>{{event_name}}</strong>. Vui lòng lưu giữ thông tin bên dưới để check-in tại sự kiện.</p>
             </div>
             
             <div class="registration-details">
-                <h3>📋 Chi tiết đăng ký</h3>
-                <div class="detail-row">
-                    <span class="detail-label">Sự kiện:</span>
-                    <span class="detail-value">{{event_name}}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Thời gian:</span>
-                    <span class="detail-value">{{event_time}}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Địa điểm:</span>
-                    <span class="detail-value">{{event_location}}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Người đăng ký:</span>
-                    <span class="detail-value">{{user_name}}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Email:</span>
-                    <span class="detail-value">{{user_email}}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Ngày đăng ký:</span>
-                    <span class="detail-value">{{registration_date}}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Trạng thái:</span>
-                    <span class="detail-value" style="color: #28a745; font-weight: bold;">✅ Đã xác nhận</span>
+                <h3>📋 Thông tin đăng ký</h3>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <span class="detail-icon">🎫</span>
+                        <div class="detail-label">Mã đăng ký</div>
+                        <div class="detail-value">{{registration_id}}</div>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-icon">👤</span>
+                        <div class="detail-label">Người đăng ký</div>
+                        <div class="detail-value">{{participant_name}}</div>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-icon">📅</span>
+                        <div class="detail-label">Ngày đăng ký</div>
+                        <div class="detail-value">{{registration_date}}</div>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-icon">💰</span>
+                        <div class="detail-label">Phí đã thanh toán</div>
+                        <div class="detail-value">{{payment_amount}}</div>
+                    </div>
                 </div>
             </div>
             
-            <div class="qr-section">
+            <div class="qr-code-section">
                 <h3>📱 QR Code Check-in</h3>
-                <div class="qr-code">
-                    <img src="{{qr_code_url}}" alt="QR Code" />
-                    <div class="qr-text">Quét mã này để check-in</div>
+                <div class="qr-code-container">
+                    <div class="qr-code">
+                        {{qr_code_svg}}
+                    </div>
                 </div>
-                <p style="color: #666; font-size: 14px;">
-                    Hoặc sử dụng mã vé: <strong>{{ticket_number}}</strong>
+                <p style="margin-top: var(--spacing-md); color: var(--gray-600); font-size: var(--font-size-sm);">
+                    Quét mã QR này tại sự kiện để check-in
                 </p>
             </div>
             
-            <div class="info-box">
-                <h4>📢 Lưu ý quan trọng</h4>
+            <div class="qr-instructions">
+                <h4>📱 Hướng dẫn sử dụng QR Code</h4>
                 <ul>
-                    <li>Vui lòng đến sớm 15 phút trước khi sự kiện bắt đầu</li>
-                    <li>Mang theo thẻ sinh viên/CMND để xác minh danh tính</li>
-                    <li>Lưu giữ email này để làm bằng chứng đăng ký</li>
-                    <li>Nếu không thể tham gia, vui lòng hủy đăng ký trước 24h</li>
+                    <li>Lưu ảnh QR code vào điện thoại hoặc in ra giấy</li>
+                    <li>Đến sự kiện sớm 15 phút để làm thủ tục check-in</li>
+                    <li>Hiển thị QR code cho nhân viên quét</li>
+                    <li>Nhận thẻ tham gia và tài liệu sự kiện</li>
                 </ul>
             </div>
             
-            <div class="action-buttons">
-                <a href="{{event_details_link}}" class="btn btn-primary">📖 Xem chi tiết sự kiện</a>
-                <a href="{{cancel_link}}" class="btn btn-secondary">❌ Hủy đăng ký</a>
+            <div class="event-reminders">
+                <h4>⏰ Nhắc nhở sự kiện</h4>
+                <div class="reminder-item">
+                    <div class="reminder-time">📅 {{event_date}} - {{event_time}}</div>
+                    <div class="reminder-text">Sự kiện sẽ diễn ra tại {{event_location}}</div>
+                </div>
+                <div class="reminder-item">
+                    <div class="reminder-time">🕒 15 phút trước sự kiện</div>
+                    <div class="reminder-text">Đến sớm để làm thủ tục check-in</div>
+                </div>
+                <div class="reminder-item">
+                    <div class="reminder-time">📱 1 giờ trước sự kiện</div>
+                    <div class="reminder-text">Nhắc nhở cuối cùng qua email</div>
+                </div>
             </div>
             
-            <p style="text-align: center; color: #666; font-size: 14px; margin-top: 20px;">
-                Cảm ơn bạn đã đăng ký tham gia! Chúng tôi rất mong được gặp bạn tại sự kiện.
-            </p>
+            <div class="cancellation-options">
+                <h4>❌ Tùy chọn hủy đăng ký</h4>
+                <p>Nếu bạn không thể tham gia sự kiện, vui lòng hủy đăng ký ít nhất 24 giờ trước sự kiện để nhận hoàn tiền (nếu có).</p>
+                <div class="action-buttons">
+                    <a href="{{cancel_registration_url}}" class="button error">❌ Hủy đăng ký</a>
+                    <a href="{{event_details_url}}" class="button secondary">📋 Xem chi tiết sự kiện</a>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{{add_to_calendar_url}}" class="button primary">📅 Thêm vào lịch</a>
+                <a href="{{download_ticket_url}}" class="button secondary">🎫 Tải vé</a>
+                <a href="{{contact_organizer_url}}" class="button secondary">📞 Liên hệ ban tổ chức</a>
+            </div>
         </div>
         
         <div class="footer">
             <p><strong>EventHub - Hệ thống quản lý sự kiện</strong></p>
             <p>© 2024 EventHub. Tất cả quyền được bảo lưu.</p>
-            <p>Email: support@eventhub.com | Phone: +84 123 456 789</p>
-            <div class="social-links">
-                <a href="#">📧</a>
-                <a href="#">📱</a>
-                <a href="#">🌐</a>
-                <a href="#">📘</a>
-            </div>
+            <p>Nếu có thắc mắc, liên hệ: support@eventhub.com</p>
         </div>
     </div>
 </body>

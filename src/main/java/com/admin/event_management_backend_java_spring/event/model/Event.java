@@ -1,8 +1,9 @@
 package com.admin.event_management_backend_java_spring.event.model;
 
 import com.admin.event_management_backend_java_spring.department.model.Department;
+import com.admin.event_management_backend_java_spring.event.model.EventLevel;
+import com.admin.event_management_backend_java_spring.training.model.TrainingCriteria;
 import com.admin.event_management_backend_java_spring.user.model.User;
-import com.admin.event_management_backend_java_spring.school.model.School;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -55,6 +56,12 @@ public class Event {
     private Boolean useCustomPoints = false;
     private Integer trainingPointsReward;
     private Integer socialPointsReward;
+
+    // Tiêu chí đánh giá điểm rèn luyện (TC1-TC5)
+    private TrainingCriteria trainingCriteria; // TC3_ACTIVITIES hoặc TC4_COMMUNITY
+    
+    // Cấp độ sự kiện
+    private EventLevel eventLevel; // SCHOOL, DEPARTMENT, CLUB, LOCAL, EXTERNAL, etc.
 
     // Khóa học được phép đăng ký
     private List<Integer> allowedCohorts; // Ví dụ: [2021, 2022, 2023] - chỉ cho phép khóa 2021, 2022, 2023 đăng ký

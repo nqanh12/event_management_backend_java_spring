@@ -1,8 +1,11 @@
 package com.admin.event_management_backend_java_spring.user.controller;
 
+import com.admin.event_management_backend_java_spring.payload.ApiResponse;
+import com.admin.event_management_backend_java_spring.payload.PaginatedResponse;
 import com.admin.event_management_backend_java_spring.user.model.UserSession;
 import com.admin.event_management_backend_java_spring.user.service.UserSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,19 +16,22 @@ import java.util.Map;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/admin/user-sessions")
-@PreAuthorize("hasRole('GLOBAL_ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserSessionController {
     
     @Autowired
     private UserSessionService userSessionService;
     
     /**
-     * Lấy tất cả active sessions
+     * Lấy tất cả active sessions với pagination
      */
     @GetMapping("/active")
-    public ResponseEntity<List<UserSession>> getAllActiveSessions() {
-        // TODO: Implement pagination
-        return ResponseEntity.ok(userSessionService.getAllActiveSessions());
+    public ResponseEntity<ApiResponse<PaginatedResponse<UserSession>>> getAllActiveSessions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        Page<UserSession> sessionsPage = userSessionService.getAllActiveSessions(page, size);
+        PaginatedResponse<UserSession> paginatedResponse = PaginatedResponse.fromPage(sessionsPage);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Active sessions retrieved successfully", paginatedResponse));
     }
     
     /**

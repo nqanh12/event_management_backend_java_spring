@@ -4,10 +4,9 @@ import com.admin.event_management_backend_java_spring.user.model.User;
 import com.admin.event_management_backend_java_spring.user.repository.UserRepository;
 import com.admin.event_management_backend_java_spring.exception.AppException;
 import com.admin.event_management_backend_java_spring.exception.ErrorCode;
+import com.admin.event_management_backend_java_spring.integration.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -19,7 +18,7 @@ import java.util.Random;
 public class TwoFactorAuthService {
 
     private final UserRepository userRepository;
-    private final JavaMailSender mailSender;
+    private final MailService mailService;
 
     private static final int OTP_LENGTH = 6;
     private static final int OTP_EXPIRY_MINUTES = 5;
@@ -30,13 +29,14 @@ public class TwoFactorAuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        // Kiểm tra xem 2FA có được bật không
-        if (!user.getTwoFactorEnabled()) {
+        // Kiểm tra xem có bị khóa tạm thời không
+        if (user.getLock2faUntil() != null && user.getLock2faUntil().after(new Date())) {
             throw new AppException(ErrorCode.BAD_REQUEST);
         }
 
-        // Kiểm tra xem có bị khóa tạm thời không
-        if (user.getLock2faUntil() != null && user.getLock2faUntil().after(new Date())) {
+        // Kiểm tra role để quyết định có gửi OTP không
+        boolean shouldSendOtp = shouldSendOtpForUser(user);
+        if (!shouldSendOtp) {
             throw new AppException(ErrorCode.BAD_REQUEST);
         }
 
@@ -50,8 +50,36 @@ public class TwoFactorAuthService {
         user.setTwoFactorVerified(false);
         userRepository.save(user);
 
-        // Gửi email
-        sendOtpEmail(user.getEmail(), otp);
+        // Gửi email sử dụng template
+        mailService.sendOtpMail(user.getEmail(), otp);
+    }
+
+    // Kiểm tra xem có nên gửi OTP cho user không
+    private boolean shouldSendOtpForUser(User user) {
+        // Admin luôn cần 2FA
+        if (isAdminRole(user.getRole())) {
+            return true;
+        }
+        
+        // Student và Organization chỉ gửi OTP nếu đã bật 2FA
+        if (isStudentOrOrganizationRole(user.getRole())) {
+            return user.getTwoFactorEnabled() != null && user.getTwoFactorEnabled();
+        }
+        
+        // Các role khác không gửi OTP
+        return false;
+    }
+
+    // Kiểm tra xem có phải admin role không
+    private boolean isAdminRole(User.UserRole role) {
+        return role == User.UserRole.ADMIN || 
+               role == User.UserRole.FACULTY_ADMIN;
+    }
+
+    // Kiểm tra xem có phải student hoặc organization role không
+    private boolean isStudentOrOrganizationRole(User.UserRole role) {
+        return role == User.UserRole.STUDENT || 
+               role == User.UserRole.ORGANIZER;
     }
 
     public boolean verifyOtp(String email, String otp) {
@@ -97,6 +125,11 @@ public class TwoFactorAuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        // Chỉ cho phép student và organization bật 2FA
+        if (!isStudentOrOrganizationRole(user.getRole())) {
+            throw new AppException(ErrorCode.BAD_REQUEST);
+        }
+
         user.setTwoFactorEnabled(true);
         userRepository.save(user);
     }
@@ -104,6 +137,11 @@ public class TwoFactorAuthService {
     public void disable2FA(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        // Chỉ cho phép student và organization tắt 2FA
+        if (!isStudentOrOrganizationRole(user.getRole())) {
+            throw new AppException(ErrorCode.BAD_REQUEST);
+        }
 
         user.setTwoFactorEnabled(false);
         user.setTwoFactorVerified(false);
@@ -123,18 +161,5 @@ public class TwoFactorAuthService {
         return otp.toString();
     }
 
-    private void sendOtpEmail(String email, String otp) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(email);
-            message.setSubject("2FA Verification Code");
-            message.setText("Your 2FA verification code is: " + otp + "\n\nThis code will expire in " + OTP_EXPIRY_MINUTES + " minutes.");
-            
-            mailSender.send(message);
-            log.info("2FA OTP sent to email: {}", email);
-        } catch (Exception e) {
-            log.error("Failed to send 2FA OTP email", e);
-            throw new AppException(ErrorCode.INTERNAL_ERROR);
-        }
-    }
+
 } 
