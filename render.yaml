@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: event-management-backend
+    env: java
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/*.jar
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: SERVER_PORT
+        value: 8080
+      - key: JAVA_OPTS
+        value: -Xmx512m -Xms256m
+      # MongoDB - Update with your MongoDB connection string
+      - key: SPRING_DATA_MONGODB_URI
+        sync: false
+      # JWT Configuration
+      - key: JWT_SIGNER_KEY
+        sync: false
+      - key: JWT_VALID_DURATION
+        value: 172800
+      - key: JWT_REFRESHABLE_DURATION
+        value: 604800
+      # Email Configuration
+      - key: SPRING_MAIL_HOST
+        value: smtp.gmail.com
+      - key: SPRING_MAIL_PORT
+        value: 587
+      - key: SPRING_MAIL_USERNAME
+        sync: false
+      - key: SPRING_MAIL_PASSWORD
+        sync: false
+      # Cookie Configuration for Production
+      - key: JWT_COOKIE_DOMAIN
+        sync: false
+      - key: JWT_COOKIE_SECURE
+        value: true
+      - key: JWT_COOKIE_SAME_SITE
+        value: Strict
+

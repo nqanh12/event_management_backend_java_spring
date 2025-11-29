@@ -1,0 +1,77 @@
+spring:
+    application:
+        name: event_management_backend_java_spring
+    data:
+        mongodb:
+            uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/EventManagement}
+            database: EventManagement
+    jackson:
+      serialization:
+        write-dates-as-timestamps: false
+
+    logging:
+        level:
+            root: INFO
+            org.mongodb.driver: WARN
+            org.springframework: WARN
+            com.admin.event_management_backend_java_spring: INFO
+
+    mail:
+        host: ${SPRING_MAIL_HOST:smtp.gmail.com}
+        port: ${SPRING_MAIL_PORT:587}
+        username: ${SPRING_MAIL_USERNAME:}
+        password: ${SPRING_MAIL_PASSWORD:}
+        properties:
+          mail:
+            smtp:
+              auth: true
+              starttls:
+                enable: true
+
+jwt:
+  signerKey: ${JWT_SIGNER_KEY:tIpVTNnjWmJ+nIwbqvcFMdikQPxERxhtiGBnbhGtJSj2LG0126wKHw/Dro7bie6D}
+  valid-duration: ${JWT_VALID_DURATION:172800}
+  refreshable-duration: ${JWT_REFRESHABLE_DURATION:604800}
+  cookie:
+    domain: ${JWT_COOKIE_DOMAIN:}
+    secure: ${JWT_COOKIE_SECURE:true}
+    same-site: ${JWT_COOKIE_SAME_SITE:Strict}
+
+server:
+    port: ${PORT:8080}
+    error:
+        include-message: always
+        include-stacktrace: on_param
+        include-binding-errors: always
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,info,metrics
+    endpoint:
+        health:
+            show-details: when-authorized
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    display-request-duration: true
+    doc-expansion: none
+    filter: true
+    tryItOutEnabled: true
+    show-extensions: true
+    show-common-extensions: true
+    persist-authorization: true
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+
+info:
+  title: Event Management Backend API
+  description: API documentation for Event Management System (Spring Boot)
+  version: 1.0.0
+

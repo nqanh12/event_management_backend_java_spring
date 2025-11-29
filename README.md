@@ -60,7 +60,7 @@
 
 ### 2. Clone & Build
 ```bash
-git clone https://github.com/your-org/event_management_backend_java_spring.git
+git clone https://github.com/nqanh12/event_management_backend_java_spring.git
 cd event_management_backend_java_spring
 mvn clean install
 ```
@@ -79,6 +79,20 @@ docker-compose up --build
 ```bash
 mvn spring-boot:run
 ```
+
+### 5. Deploy lên Render (Production)
+Xem hướng dẫn chi tiết tại: [DEPLOY_RENDER.md](./DEPLOY_RENDER.md)
+
+**Tóm tắt:**
+1. Tạo MongoDB Atlas cluster
+2. Tạo Web Service trên Render
+3. Cấu hình Environment Variables
+4. Deploy tự động từ GitHub
+
+**Quick Start:**
+- Sử dụng file `render.yaml` có sẵn trong project
+- Connect GitHub repository với Render
+- Set environment variables trong Render Dashboard
 
 ---
 
