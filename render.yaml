@@ -1,18 +1,17 @@
 services:
   - type: web
     name: event-management-backend
-    env: java
-    buildCommand: mvn clean package -DskipTests
-    startCommand: java -jar target/*.jar
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: production
-      - key: SERVER_PORT
-        value: 8080
       - key: JAVA_OPTS
         value: -Xmx512m -Xms256m
+      # PORT is automatically set by Render, no need to set it manually
       # MongoDB - Update with your MongoDB connection string
       - key: SPRING_DATA_MONGODB_URI
         sync: false
