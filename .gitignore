@@ -40,3 +40,6 @@ build/
 api_endpoints.txt
 *.md
 !README.md
+!CHI_TIET_ADMIN_DASHBOARD.md
+!DEPLOY_RENDER.md
+!RENDER_ENV_VARS.md
